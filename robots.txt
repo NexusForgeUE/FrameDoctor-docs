@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://nexusforgeue.github.io/FrameDoctor-docs/sitemap.xml

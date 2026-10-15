@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="site-root" content="../">
+<meta name="description" content="了解如何安装 FrameDoctor、首次记录 Unreal Engine CPU 跟踪、阅读帧耗时、比较手动修改的效果，以及分享验证数据。">
+<meta name="theme-color" content="#141619">
+<title>FrameDoctor 文档 | Unreal Engine 5.5–5.8</title>
+<link rel="canonical" href="https://nexusforgeue.github.io/FrameDoctor-docs/zh-Hans/">
+<link rel="alternate" hreflang="en" href="https://nexusforgeue.github.io/FrameDoctor-docs/">
+<link rel="alternate" hreflang="ru" href="https://nexusforgeue.github.io/FrameDoctor-docs/ru/">
+<link rel="alternate" hreflang="de" href="https://nexusforgeue.github.io/FrameDoctor-docs/de/">
+<link rel="alternate" hreflang="es" href="https://nexusforgeue.github.io/FrameDoctor-docs/es/">
+<link rel="alternate" hreflang="fr" href="https://nexusforgeue.github.io/FrameDoctor-docs/fr/">
+<link rel="alternate" hreflang="ja" href="https://nexusforgeue.github.io/FrameDoctor-docs/ja/">
+<link rel="alternate" hreflang="ko" href="https://nexusforgeue.github.io/FrameDoctor-docs/ko/">
+<link rel="alternate" hreflang="pt-BR" href="https://nexusforgeue.github.io/FrameDoctor-docs/pt-BR/">
+<link rel="alternate" hreflang="zh-Hans" href="https://nexusforgeue.github.io/FrameDoctor-docs/zh-Hans/">
+<link rel="alternate" hreflang="x-default" href="https://nexusforgeue.github.io/FrameDoctor-docs/">
+<link rel="icon" type="image/svg+xml" href="../assets/framedoctor.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/app.js" defer></script>
+</head>
+<body data-search-empty="没有匹配的章节，请尝试更短的搜索词。" data-search-results="找到 {count} 个匹配章节">
+<a class="skip-link" href="#main">跳转到指南正文</a>
+<header class="site-header"><a class="brand" href="#overview"><img src="../assets/framedoctor.svg" width="40" height="40" alt=""><span>FrameDoctor<small>文档</small></span></a><div class="header-actions"><label class="language-picker"><span class="visually-hidden">指南语言</span><select id="doc-locale" aria-label="指南语言"><option value="en" lang="en">English</option><option value="ru" lang="ru">Русский</option><option value="de" lang="de">Deutsch</option><option value="es" lang="es">Español</option><option value="fr" lang="fr">Français</option><option value="ja" lang="ja">日本語</option><option value="ko" lang="ko">한국어</option><option value="pt-BR" lang="pt-BR">Português (Brasil)</option><option value="zh-Hans" lang="zh-Hans" selected>简体中文</option></select></label><button type="button" class="print-button" id="print-guide">打印指南</button><button type="button" class="menu-button" id="menu-toggle" aria-label="章节" aria-controls="sidebar" aria-expanded="false"><span class="menu-caption">章节</span><svg class="menu-icon" aria-hidden="true" width="18" height="18" viewBox="0 0 18 18"><path d="M2 4h14M2 9h14M2 14h14" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button></div></header>
+<div class="veil" id="menu-veil" aria-hidden="true"></div>
+<div class="layout"><aside class="sidebar" id="sidebar"><div class="search-box"><label for="doc-search">搜索本指南</label><input id="doc-search" type="search" placeholder="试试：首次记录、p95 或 Blueprint" autocomplete="off" aria-controls="search-results"><div class="search-results" id="search-results" hidden></div><p class="visually-hidden" id="search-status" role="status" aria-live="polite"></p></div><nav aria-label="指南目录"><p class="nav-heading">从这里开始</p><a href="#overview" aria-current="location"><span class="nav-number" aria-hidden="true">1</span><span>概述</span></a>
+<a href="#installation"><span class="nav-number" aria-hidden="true">2</span><span>安装</span></a>
+<a href="#first-capture"><span class="nav-number" aria-hidden="true">3</span><span>首次记录</span></a>
+<a href="#capture"><span class="nav-number" aria-hidden="true">4</span><span>记录设置</span></a>
+<p class="nav-heading">阅读与比较</p><a href="#findings"><span class="nav-number" aria-hidden="true">5</span><span>Findings</span></a>
+<a href="#frame-chart"><span class="nav-number" aria-hidden="true">6</span><span>帧耗时图表</span></a>
+<a href="#development"><span class="nav-number" aria-hidden="true">7</span><span>准备 A 和 B</span></a>
+<a href="#compare"><span class="nav-number" aria-hidden="true">8</span><span>比较运行结果</span></a>
+<p class="nav-heading">继续使用</p><a href="#runs"><span class="nav-number" aria-hidden="true">9</span><span>运行记录与导出</span></a>
+<a href="#profiles"><span class="nav-number" aria-hidden="true">10</span><span>配置与限制</span></a>
+<a href="#scenarios"><span class="nav-number" aria-hidden="true">11</span><span>自定义情景</span></a>
+<a href="#troubleshooting"><span class="nav-number" aria-hidden="true">12</span><span>故障排查</span></a>
+<a href="#glossary"><span class="nav-number" aria-hidden="true">13</span><span>术语表</span></a>
+<a href="#support"><span class="nav-number" aria-hidden="true">14</span><span>版本与支持</span></a></nav><div class="sidebar-footer"><span>FrameDoctor 1.0.0</span><span>Unreal Engine 5.5–5.8</span><span>Windows 64 位</span></div></aside>
+<main class="guide" id="main" tabindex="-1"><section class="doc-section overview" id="overview" data-title="FrameDoctor 能做什么" tabindex="-1"><div class="compatibility"><span>Unreal Engine 5.5–5.8</span><span>Windows 64 位</span></div><h1>FrameDoctor 用户指南</h1><p class="lead">记录场景中发生的事情，找出耗时的 CPU 工作，并检查手动修改是否有效。即使这是你的第一个 Unreal Engine 项目，也可以从这里开始。</p><div class="intro-actions"><a class="primary" href="#first-capture">开始首次记录</a><a class="secondary" href="#installation">安装 FrameDoctor</a></div><ol class="workflow" aria-label="FrameDoctor 用户指南"><li>记录场景</li><li>阅读验证数据</li><li>进行一项修改</li><li>比较运行结果</li><li>保存结果</li></ol>
+
+      <p>帧就是游戏的一张画面。<strong>帧耗时</strong>是游戏生成下一帧所需的时间。耗时长的帧会让人感觉画面停顿或卡顿。FrameDoctor 会记录包含计时事件的跟踪文件，再将这些事件整理为图表和 CPU 作用域列表。</p>
+      <ul><li><strong>Capture：</strong>记录正在运行的场景。</li><li><strong>Findings：</strong>阅读帧耗时，检查一项 CPU 工作。</li><li><strong>Compare：</strong>测量修改前后保留下来的两个 Development 构建。</li><li><strong>Runs：</strong>重新查看记录，导出验证数据。</li><li><strong>Settings：</strong>保存记录配置，选择阈值。</li></ul>
+      <div class="callout"><strong>修改由你完成。</strong>FrameDoctor 帮助你调查和测量，不会重写代码或自动修复游戏。分析在本地进行。</div>
+      <p>本指南已翻译，但文中提到的插件控件仍使用其英文名称。语言选择器切换的是本指南的语言。不熟悉的 Unreal 术语可在<a href="#glossary">简明术语表</a>中查阅。</p>
+</section>
+<section class="doc-section" id="installation" data-title="安装并打开 FrameDoctor" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">2</span><h2>安装并打开 FrameDoctor</h2></div>
+
+      <p>FrameDoctor 支持<strong> Windows 64 位上的 Unreal Engine 5.5、5.6、5.7 和 5.8</strong>。请选择与引擎版本匹配的插件包。</p>
+      <h3>如果你从未打开过 Unreal</h3><p>打开 <strong>Epic Games Launcher → Unreal Engine → Library</strong>，启动已安装的引擎。打开现有项目，或选择 <strong>Games → Blank → Blueprint</strong>，输入项目名称和文件夹，然后点击 <strong>Create</strong>。项目保存整个游戏；地图也称关卡，用于保存其中的一个场景。</p>
+      <h3>从 Fab 安装</h3><ol role="list"><li>关闭 Unreal Editor。在启动器的 <strong>Fab Library</strong> 中找到 FrameDoctor，点击 <strong>Install to Engine</strong>。</li><li>选择项目使用的引擎版本，完成安装。</li><li>打开项目。进入 <strong>Edit → Plugins</strong>，搜索 <strong>FrameDoctor</strong> 并启用，按提示重启编辑器。</li><li>从编辑器主菜单打开 <strong>Tools → FrameDoctor</strong>。</li></ol>
+      <h3>安装提供的 ZIP 包</h3><ol role="list"><li>关闭编辑器，解压插件。</li><li>将其中单独的 <code>FrameDoctor</code> 文件夹放入项目的 <code>Plugins</code> 文件夹。如果没有 <code>Plugins</code>，请先创建。</li><li>检查下面的路径，避免多出一层 <code>FrameDoctor/FrameDoctor</code> 嵌套文件夹。</li><li>打开项目，在 <strong>Edit → Plugins</strong> 中启用插件，重启后打开 <strong>Tools → FrameDoctor</strong>。</li></ol>
+      <pre><code>YourProject/
+  YourProject.uproject
+  Plugins/
+    FrameDoctor/
+      FrameDoctor.uplugin
+      Content/
+      Resources/
+      Source/</code></pre>
+      <details><summary>Unreal 要求编译模块怎么办？</summary><p>已编译的插件包还包含 <code>Binaries</code>。只有源码的包需要匹配的 C++ 编译工具链，即使游戏使用 Blueprint 也一样。安装 Visual Studio 2022，并选择 <strong>Game development with C++</strong> 以及引擎所需的 Windows SDK。对于纯 Blueprint 项目，可通过 <strong>Tools → New C++ Class</strong> 添加一个最小类，创建 C++ 项目目标。关闭 Unreal，在 Visual Studio 中构建项目的 <strong>Development Editor / Win64</strong> 目标，然后重新打开项目。如果编译失败，请阅读第一条构建错误，并确认引擎与插件包版本匹配。</p></details>
+      <p class="reference">Epic 指南：<a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/working-with-plugins-in-unreal-engine">启用和安装插件</a>。</p>
+</section>
+<section class="doc-section" id="first-capture" data-title="首次记录" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">3</span><h2>首次记录</h2></div>
+
+      <p>先使用一个场景和附带的示例情景。<strong>情景</strong>用于告诉 FrameDoctor 场景何时准备就绪、何时可以开始测量。这个示例适合用来学习操作和调查场景。</p>
+      <ol role="list"><li><strong>打开并保存地图。</strong>打开要检查的场景，然后使用 <strong>File → Save All</strong>。</li><li><strong>开始 Play。</strong>点击编辑器工具栏中的三角形 <strong>Play</strong> 按钮。这就是 Play In Editor，简称 PIE。按 <kbd>Shift</kbd> + <kbd>F1</kbd> 释放鼠标，即可在游戏继续运行时使用编辑器。</li><li><strong>选择 Capture。</strong>打开 <strong>Tools → FrameDoctor → Capture</strong>。保持 <strong>Use a packaged Development build</strong> 未勾选。PIE 记录的是已在 Play 中运行的地图；在 Map 字段选择另一张地图不会切换当前世界。</li><li><strong>选择示例。</strong>在 <strong>Scenario</strong> 中搜索 <code>BP_ExploratoryScenario</code>。要找到该资产，可打开 Content Browser，或按 <kbd>Ctrl</kbd> + <kbd>Space</kbd> 打开 Content Drawer，在其设置中启用 <strong>Show Plugin Content</strong>，然后查看 <strong>FrameDoctor Content → FrameDoctor → Examples</strong>。情景应在 FrameDoctor 中选择，不需要拖入关卡。</li><li><strong>开始记录。</strong>保留<strong> 10 秒预热</strong>和<strong> 60 秒测量</strong>。阅读 Preflight，再点击 <strong>Capture running PIE</strong>。让 Play 继续运行，执行你想调查的操作。预热不计入测量结果。</li><li><strong>阅读 Findings。</strong>记录完成后，如果尚未选中 <strong>Findings</strong>，请打开它。先阅读 <strong>Capture quality and unavailable reasons</strong>，再选择一个 CPU 作用域查看其验证数据。</li></ol>
+      <div class="callout"><strong>第一个示例仅用于探索。</strong>其描述没有确立可复现的游戏条件。你可以检查跟踪，但在确认 A/B 效果前，应使用<a href="#scenarios">正确描述条件的情景</a>和<a href="#development">两个 Development 构建</a>。</div>
+      <p>请让游戏一直运行到记录结束。<kbd>Esc</kbd> 或编辑器的 Stop 按钮可能结束 PIE，导致记录中断。如需取消 FrameDoctor 当前的任务，请使用其中的 <strong>Cancel</strong>。</p>
+</section>
+<section class="doc-section" id="capture" data-title="选择记录内容" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">4</span><h2>选择记录内容</h2></div>
+
+      <p><strong>Capture</strong> 有两种记录目标。未勾选 <strong>Use a packaged Development build</strong> 时，记录当前 PIE 世界；勾选后，FrameDoctor 会单独启动打包后的游戏。需要可复现的修改前后测量时，请使用打包后的游戏。</p>
+      <div class="table-scroll"><table><caption>Capture 控件</caption><thead><tr><th>控件</th><th>使用方法</th></tr></thead><tbody><tr><td>Baseline Development executable</td><td>使用 Browse 选择保留下来的构建 A。此路径与 Compare 共用。</td></tr><tr><td>Map 和 Scenario</td><td>选择情景类。对于 Development，请提供已烘焙的地图和情景类路径。</td></tr><tr><td>Warmup</td><td>准备就绪后，等待场景稳定的时间。不计入测量。</td></tr><tr><td>Measurement</td><td>计入结果的时间。先从 60 秒开始。</td></tr><tr><td>Detailed naming for investigation</td><td>包含更多具名事件。这会增加开销，A/B 两侧应保持相同设置。</td></tr><tr><td>Preflight</td><td>开始前查看选定模式、跟踪通道和可用磁盘空间。</td></tr></tbody></table></div>
+      <p>常规 CPU 配置使用 <code>cpu,frame,bookmark</code>。CPU 事件描述工作，frame 事件提供帧边界，bookmark 标记测量区间。如果已有外部记录正在运行，必须先结束它，FrameDoctor 才能开始自己的跟踪。</p>
+      <p>顺序是先准备就绪，再预热，最后测量。<strong>Ready timeout</strong> 和 <strong>Maximum trace size</strong> 在 <a href="#profiles">Settings</a> 中设置。被取消或中断的记录会连同状态一起保留，但不能作为已完成的比较基准。</p>
+      <figure><a href="../assets/screens/capture.png" target="_blank" rel="noopener" aria-label="打开原尺寸图片: Capture 页面，显示 Development 目标、地图、情景、预热、测量及 Preflight。"><img src="../assets/screens/capture.png" width="1920" height="1080" alt="Capture 页面，显示 Development 目标、地图、情景、预热、测量及 Preflight。" loading="lazy"></a><figcaption>打包后的 Development 设置示例。首次 PIE 记录时，请保持打包构建复选框未勾选。</figcaption></figure>
+</section>
+<section class="doc-section" id="findings" data-title="阅读 CPU 验证数据" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">5</span><h2>阅读 CPU 验证数据</h2></div>
+
+      <h3>打开现有跟踪</h3><p>点击 <strong>Import trace</strong>，选择已经结束记录的 <code>.utrace</code> 文件，等待 Findings 显示。导入前请先停止记录。如需保留比较的来源依据，请将相邻的 <code>manifest.json</code> 和原始运行文件与跟踪一起保留。阅读 <strong>Capture quality and unavailable reasons</strong>，检查可用的 CPU、帧和测量数据。</p>
+      <p>如果无法唯一确定一对完整的 FrameDoctor 测量开始和测量结束书签，就会将整个跟踪作为探索记录进行分析。运行清单缺失或其格式不受支持时，记录的完整性仍处于未验证状态。你可以检查可用事件，但不能将未验证数据或探索数据作为已确认的 A/B 基准。</p>
+      <p>先查看记录状态和质量。如果数据不完整或某个值显示 <strong>Unavailable</strong>，请打开 <strong>Capture quality and unavailable reasons</strong>。这表示无法确定该值，并不表示它等于零。</p>
+      <ol role="list"><li>阅读 <strong>Game frame p95</strong> 和测量时长，将曲线与帧预算比较。</li><li>通过 <strong>Search scopes…</strong> 查找计时器名称，或通过 <strong>All threads</strong> 选择线程。线程是 CPU 上的一条工作流；GameThread 通常运行游戏逻辑。</li><li>点击作用域所在行。面板会解释 <strong>Measured</strong>（测量内容）、<strong>Interpretation</strong>（结果解读）、<strong>Next experiment</strong>（下一步实验）和 <strong>Behavior risk</strong>（行为风险）。</li><li>使用 <strong>Copy evidence</strong> 复制选定计时器、线程和区间的标识信息。使用 <strong>Open in Insights</strong> 在 Unreal Insights 中打开同一跟踪，再手动定位到该区间。</li></ol>
+      <p><strong>Exclusive / frame</strong> 是该作用域扣除同一线程上的子作用域后，在有效帧上的平均耗时。<strong>Calls</strong> 统计测量区间内开始的调用次数。作用域可能包含等待。仅凭名称无法确定具体资产，也无法证明某一个 Blueprint 节点的开销。</p>
+      <div class="callout"><strong>搜索有可见范围限制。</strong>表格会加载排名靠前的 250 行。搜索和线程筛选仅作用于这些已加载的行。完整的分析 JSON 保留了其他作用域的汇总数据。使用 <strong>Clear filters</strong> 可恢复表格。</div>
+      <p>不要通过叠加嵌套的包含耗时或并行线程耗时来估算帧开销。游戏帧、渲染帧和 GPU 队列上下文有不同含义。如果没有权威的 GPU 帧数值，该值将保持不可用。</p>
+      <figure><a href="../assets/screens/findings.png" target="_blank" rel="noopener" aria-label="打开原尺寸图片: Findings 中的实际帧图表、选中的 EnemyAwareness::Update 作用域及其验证数据面板。"><img src="../assets/screens/findings.png" width="1920" height="1080" alt="Findings 中的实际帧图表、选中的 EnemyAwareness::Update 作用域及其验证数据面板。" loading="lazy"></a><figcaption>选择作用域后，可以把测得的开销与下一步调查联系起来。图中数值为一次示例记录。</figcaption></figure>
+</section>
+<section class="doc-section" id="frame-chart" data-title="查看帧耗时图表" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">6</span><h2>查看帧耗时图表</h2></div>
+
+      <p>横轴是测量期间的时间，纵轴是以毫秒计的帧耗时。峰值越高，帧越慢。虚线预算线表示你选择的目标：<strong>16.67 ms</strong> 约等于每秒 60 帧。</p>
+      <ul><li><strong>缩放：</strong>在绘图区上使用鼠标滚轮，或拖动下方小型概览图中的琥珀色手柄。</li><li><strong>平移：</strong>拖动概览图中的选中范围内部。图表获得键盘焦点时，可用左右方向键移动可见范围。</li><li><strong>检查：</strong>在绘图区上移动指针。读数会显示时间或聚合桶、样本数，以及可用的最短和最长耗时。</li><li><strong>重置：</strong>点击 <strong>Reset view</strong>。<kbd>Home</kbd> 或 <kbd>Esc</kbd> 也可重置当前获得焦点的图表。</li></ul>
+      <div class="callout"><strong>缩放改变的是视图。</strong>顶部的 p95、CPU 作用域列表和验证数据仍使用整个测量区间。缩小可见范围不会按该范围重新计算这些值。</div>
+      <p>显示的时间范围较大时，多个帧可能共用一个绘图桶。请查看桶的样本数和数值范围，不要把它当作单帧。缺失帧数据的地方仍显示为空缺。</p>
+      <figure><a href="../assets/screens/chart.png" target="_blank" rel="noopener" aria-label="打开原尺寸图片: 放大的帧耗时图表，包含概览手柄、悬停桶读数，以及保持不变的全程测量指标。"><img src="../assets/screens/chart.png" width="1920" height="1080" alt="放大的帧耗时图表，包含概览手柄、悬停桶读数，以及保持不变的全程测量指标。" loading="lazy"></a><figcaption>概览标出当前可见的部分；说明文字会指出哪些数值仍描述整个记录。</figcaption></figure>
+</section>
+<section class="doc-section" id="development" data-title="准备两个 Development 构建" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">7</span><h2>准备两个 Development 构建</h2></div>
+
+      <p><strong>Development 构建</strong>是启用开发功能、可在编辑器之外运行的打包游戏。<strong>Baseline A</strong> 是原始构建，<strong>Candidate B</strong> 包含一项预期修改。请将每个完整构建分别保存在独立文件夹中。</p>
+      <ol role="list"><li>保存地图和<a href="#scenarios">可用于比较的情景</a>。在项目中启用 FrameDoctor。</li><li>打开 <strong>Edit → Project Settings → Packaging</strong>。将地图加入 <strong>List of maps to include in a packaged build</strong>。还要确保情景 Blueprint 会被烘焙：从已包含的内容中保留对它的硬引用，或将其文件夹加入 <strong>Additional Asset Directories to Cook</strong>。</li><li>在编辑器的 <strong>Platforms → Windows</strong> 打包控件中，将构建配置选为 <strong>Development</strong>，然后打包项目。不同引擎版本的菜单分组可能不同。将完整输出保存为构建 A。</li><li>手动进行一项要测试的修改。保存后，将构建 B 打包到另一个目录。保持场景、输入、摄像机、NPC 和记录设置一致。</li><li>在 <strong>Capture</strong> 中勾选 <strong>Use a packaged Development build</strong>。浏览并选择 A 的可执行文件，再选择地图并输入情景的生成类路径。</li></ol>
+      <pre><code>Map: /Game/Maps/TestMap
+Scenario: /Game/Scenarios/BP_TestScenario.BP_TestScenario_C
+Executable: BuildA/Windows/YourProject/Binaries/Win64/YourProject.exe</code></pre>
+      <p>请使用你自己的资产名称。<code>/Game</code> 是 Unreal 中的项目 Content 文件夹，不是 Windows 盘符。生成的 Blueprint 类以 <code>_C</code> 结尾。应保留包含内容的整个打包文件夹，仅复制可执行文件是不够的。</p>
+      <p>Preflight 检查请求的设置。外部构建是否包含对应地图和情景，要靠实际加载来确认。记录功能面向开发配置；<strong>Shipping 和 Test 构建无法进行 FrameDoctor 记录</strong>。</p>
+      <p class="reference">Epic 指南：<a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/packaging-your-project">打包 Unreal 项目</a>。</p>
+</section>
+<section class="doc-section" id="compare" data-title="检查修改是否有效" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">8</span><h2>检查修改是否有效</h2></div>
+
+      <ol role="list"><li>按上述步骤准备 A 和 B。在 <strong>Compare</strong> 中展开 <strong>New Development comparison</strong>。</li><li>选择 <strong>Baseline Development executable</strong> 和 <strong>Candidate Development executable</strong>。在 <strong>Intended change</strong> 中准确说明修改了什么。</li><li>启动前选择 <strong>Primary metric</strong>：<code>p95GameFrame</code> 用于较慢的帧，<code>meanGameFrame</code> 用于平均帧耗时，<code>p99GameFrame</code> 用于更慢的尾部帧。</li><li>先从<strong> 5 对</strong>、10 秒预热和 60 秒测量开始。对于预期的构建修改，通常只保留 <code>gameBuildId</code> 为允许的差异。匹配分辨率、画质设置、VSync、帧率上限、情景和计测设置。</li><li>点击 <strong>Launch paired Development series</strong>。FrameDoctor 按 AB/BA 交替顺序运行保留的构建。系列结束前，请勿更改两个构建文件夹。</li><li>阅读判定及其原因、配对差值、噪声、阈值和每对原始数据。通过 <strong>Open HTML report</strong> 或 <strong>Open report folder</strong> 打开保存的结果。</li></ol>
+      <div class="table-scroll"><table><caption>比较判定的含义</caption><thead><tr><th>判定</th><th>下一步</th></tr></thead><tbody><tr><td>Improved</td><td>选定帧耗时指标持续下降，超过确认阈值。请另外检查游戏行为是否正确。</td></tr><tr><td>Regressed</td><td>选定指标持续上升，超过阈值。请调查或撤销修改。</td></tr><tr><td>Inconclusive</td><td>效果过小、不一致，或缺少足够的有效数据。这不代表结果相等或没有效果。</td></tr><tr><td>InvalidComparison</td><td>这些运行无法支持有效比较。请阅读不匹配或数据缺失的原因，先修正问题。</td></tr></tbody></table></div>
+      <p>确认效果需要可比较的条件，以及<strong>至少 5 个完整配对，每次运行测量 30 秒且包含 300 个完整有效帧</strong>。较短记录可用于探索。示例探索情景无法确认效果。</p>
+      <p>毫秒值越低越好。<strong>配对差值</strong>是每对 <code>B − A</code> 差值的中位数，可能不同于屏幕上两个中位数相减的结果。效果必须超过绝对阈值、相对阈值和估计噪声三者中的最大值，且至少 80% 的配对方向一致。默认值为 0.5 ms 和 5%。这些检查有助于判断稳定性，但不能单独确定原因。</p>
+      <p>如需重新查看已完成的系列，使用 <strong>Import series and export report</strong> 并选择其 <code>series.json</code>。允许的差异不能豁免计测设置或计算方法的不匹配。</p>
+      <figure><a href="../assets/screens/compare.png" target="_blank" rel="noopener" aria-label="打开原尺寸图片: 实际的五对比较，显示判定、各次运行、配对差值、噪声和阈值。"><img src="../assets/screens/compare.png" width="1920" height="1080" alt="实际的五对比较，显示判定、各次运行、配对差值、噪声和阈值。" loading="lazy"></a><figcaption>查看汇总判定时，也请检查所有配对及其条件。</figcaption></figure>
+</section>
+<section class="doc-section" id="runs" data-title="重新打开并分享验证数据" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">9</span><h2>重新打开并分享验证数据</h2></div>
+
+      <p>打开 <strong>Runs</strong>，点击 <strong>Refresh saved runs</strong>。选择一行以阅读其来源详情。双击某次运行，或点击 <strong>Open selected evidence</strong>，即可重新打开 Findings。选择系列会打开其配对报告。</p>
+      <p>默认输出位置为 <code>&lt;YourProject&gt;/Saved/FrameDoctor</code>，可在 Settings 中选择其他输出文件夹。单次运行保留原始 <code>.utrace</code>、清单和分析结果。系列保留 <code>series.json</code>、<code>comparison.json</code>、HTML 报告，以及指向原始运行的引用。</p>
+      <ol role="list"><li>加载要分享的系列。</li><li>通过 <strong>Include source traces in the export</strong> 选择是否包含原始跟踪。根据情况，保持 <strong>Remove absolute paths and username from exported JSON</strong> 启用。</li><li>点击 <strong>Export paired series bundle</strong>，选择导出位置，等待完成。</li><li>检查导出的文件，然后将完整包发送给审核结果的人。</li></ol>
+      <div class="callout"><strong>原始跟踪保留原有内容。</strong>JSON 脱敏不会清除跟踪内部的路径或消息。两个导出复选框默认都已启用。你可以不包含跟踪，以减小审核包体积；但接收者如需在移动后重新确认结果，仍需要原始有效运行数据和原始跟踪。</div>
+      <p><strong>Promote current run to baseline</strong> 将符合条件的、已完成且可比较的运行保存到 <code>&lt;YourProject&gt;/FrameDoctor/Baselines</code>。短记录或探索记录不符合条件。在不再需要检查或重新确认前，请保留原始数据。</p>
+      <figure><a href="../assets/screens/runs.png" target="_blank" rel="noopener" aria-label="打开原尺寸图片: 已保存的完成运行、原始跟踪的可用状态、导出选项和选中的原始记录。"><img src="../assets/screens/runs.png" width="1920" height="1080" alt="已保存的完成运行、原始跟踪的可用状态、导出选项和选中的原始记录。" loading="lazy"></a><figcaption>保留可用的原始跟踪，才能让报告与实际记录保持关联。</figcaption></figure>
+</section>
+<section class="doc-section" id="profiles" data-title="保存重复使用的设置" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">10</span><h2>保存重复使用的设置</h2></div>
+
+      <p><strong>配置</strong>是一组保存下来的记录和分析设置。在 <strong>Settings</strong> 中选择 Profile ID 和名称，填写各字段，再使用 <strong>Save profile</strong>。使用 <strong>Load profile</strong> 可重新打开配置 JSON 文件。如果希望随项目历史一同管理，请将配置保存在项目的 <code>FrameDoctor/Profiles</code> 文件夹中。</p>
+      <div class="table-scroll"><table><caption>首先需要了解的设置</caption><thead><tr><th>设置</th><th>含义</th></tr></thead><tbody><tr><td>Trace channels</td><td>常规 CPU 和帧记录使用 cpu,frame,bookmark。</td></tr><tr><td>Ready timeout</td><td>预热开始前，等待情景准备就绪的最长时间。</td></tr><tr><td>Maximum trace size</td><td>单个跟踪的磁盘容量预算。超过该值的运行会失败，并保留部分数据。</td></tr><tr><td>Frame budget</td><td>目标帧耗时，默认为 16.67 ms。</td></tr><tr><td>Hitch threshold</td><td>将帧计为长帧的阈值，默认为 50 ms。</td></tr><tr><td>Absolute / relative effect threshold</td><td>考虑噪声检查前所需的最小比较效果，默认为 0.5 ms 和 5%。</td></tr><tr><td>Output folder</td><td>新记录和报告的保存位置。留空则使用默认的 Saved/FrameDoctor。</td></tr></tbody></table></div>
+      <p>A/B 两侧应使用相同配置。开始实验前，请根据目标调整阈值。任务运行时编辑表单，不会改写该任务已记录的设置。采用尚不支持的较新格式版本的配置会以只读方式打开；请使用兼容的插件，不要手动更改其格式版本号。</p>
+      <figure><a href="../assets/screens/settings.png" target="_blank" rel="noopener" aria-label="打开原尺寸图片: Settings 页面，包含配置字段、记录限制、分析阈值和输出位置。"><img src="../assets/screens/settings.png" width="1920" height="1080" alt="Settings 页面，包含配置字段、记录限制、分析阈值和输出位置。" loading="lazy"></a><figcaption>保存配置后，后续记录就能使用同样经过明确选择的条件。</figcaption></figure>
+</section>
+<section class="doc-section" id="scenarios" data-title="创建可重复的情景" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">11</span><h2>创建可重复的情景</h2></div>
+
+      <p>准备好确认修改前后效果时，请使用本节。情景需要设置并描述实际的摄像机、输入、NPC 和随机条件。可通过 Blueprint 实现其钩子；编写情景不强制要求 C++。</p>
+      <ol role="list"><li>在 Content Browser 中选择 <strong>Add → Blueprint Class → All Classes</strong>。搜索 <strong>FrameDoctorScenario</strong>，在项目内容中创建 <code>BP_TestScenario</code>。</li><li>打开该 Blueprint，在 <strong>Overrides</strong> 菜单中实现下面的钩子。这是记录时选择的对象，不是放置在关卡中的 Actor。</li><li>编译并保存 Blueprint 和地图。在 FrameDoctor 中选择该类。打包记录时，请按<a href="#development">准备 A 和 B</a>中的说明，将地图和情景包含在烘焙中。</li><li>开始长时间比较前，先进行一次简短的探索记录，检查就绪判断和清理逻辑。</li></ol>
+      <div class="table-scroll"><table><caption>情景钩子</caption><thead><tr><th>钩子</th><th>Blueprint 需要完成的工作</th></tr></thead><tbody><tr><td>Prepare(World)</td><td>找到实际场景中的 Actor，保存将要更改的设置，设置摄像机、输入和 NPC 状态，并初始化使用的随机流。</td></tr><tr><td>IsReady</td><td>只有在所需 Actor、资产和初始状态准备好后才返回 true。默认返回 false。仅等待固定时间不能证明已经就绪。</td></tr><tr><td>BeginMeasurement</td><td>预热后开始受控操作。</td></tr><tr><td>EndMeasurement</td><td>测量结束时停止该操作，也要处理操作开始后被取消的情况。</td></tr><tr><td>Cleanup</td><td>只恢复你自己的情景所做的修改，处理部分准备完成和取消的情况。</td></tr><tr><td>DescribeScenario</td><td>返回描述下列条件的 Frame Doctor Scenario Snapshot。</td></tr></tbody></table></div>
+      <details><summary>填写情景快照</summary><p>在 <strong>DescribeScenario</strong> 中，将 <strong>Make Frame Doctor Scenario Snapshot</strong> 连接到返回值。如实填写这些字段：</p><ul><li><strong>ScenarioId / Revision：</strong>稳定、非空的标识和修订版本。</li><li><strong>CameraRoute：</strong>实际固定视点或可复现的路径。</li><li><strong>InputConditions：</strong>使用的输入，或排除玩家输入的方法。</li><li><strong>NpcConditions：</strong>NPC 数量和行为；没有 NPC 时也应明确说明。</li><li><strong>ParametersJson：</strong>可选的有效 JSON 对象。例如，只有实际场景符合时，才填写 <code>{"route":"fixed","npcCount":0}</code>。</li><li><strong>SeedPolicy / RandomSeed：</strong>只有确实用该种子初始化了游戏随机性时才使用 Known；没有使用随机性时使用 NotUsed；尚未确定时使用 Unknown。</li><li><strong>DeclaredNondeterminism：</strong>仍存在的变化来源，例如物理、流式加载或操作系统调度。</li></ul><p>仅填写一个种子数字不会替你初始化游戏。条件未知时仍只能用于探索。附带的 BP_ExploratoryScenario 会有意返回空描述。</p></details>
+      <p>不要在 Cleanup 中移除其他系统的 Actor 或记录。性能修改后，请另外检查游戏行为；计时条件相同并不代表新逻辑正确。</p>
+</section>
+<section class="doc-section" id="troubleshooting" data-title="遇到问题时" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">12</span><h2>遇到问题时</h2></div>
+
+      <details open><summary>Tools 中找不到 FrameDoctor</summary><p>检查 <strong>Edit → Plugins</strong>，启用 FrameDoctor 并重启。确认插件包与引擎匹配，且 <code>FrameDoctor.uplugin</code> 直接位于插件文件夹内。使用源码时，请先完成 Development Editor 构建。</p></details>
+      <details><summary>Capture running PIE 不可用</summary><p>使用 <strong>Play</strong> 启动场景。保持打包构建复选框未勾选，选择具体的情景类，并等待其他任务结束。使用 Shift+F1 释放 PIE 鼠标后即可操作页签。</p></details>
+      <details><summary>看不到示例情景</summary><p>在 Content Browser 设置中启用 <strong>Show Plugin Content</strong>。在 FrameDoctor 的 Examples 文件夹下搜索 <code>BP_ExploratoryScenario</code>，再在 Capture 中选择其类。它不是关卡 Actor。</p></details>
+      <details><summary>出现 Ready timeout</summary><p>情景未在时限内准备就绪。请检查 <strong>IsReady</strong> 重写、实际 Actor 和资产、地图，以及烘焙后的类路径。基类返回 false。如果确实需要更长加载时间，可增加 Ready timeout，但就绪检查仍应有实际意义。</p></details>
+      <details><summary>帧耗时或独占开销显示 Unavailable</summary><p>帧耗时需要测量区间内的 frame 事件和完整帧。独占 CPU 开销还需要完整且一致的作用域层级。记录 cpu,frame,bookmark，让运行保持进行，并阅读保留的原因。切勿把不可用值当作零。</p></details>
+      <details><summary>比较结果为 Inconclusive 或 InvalidComparison</summary><p>阅读原因。检查每次运行的状态、5 个完整配对、每次运行 30 秒测量和 300 个完整帧、描述完整的情景、稳定的条件及匹配的计测设置。Inconclusive 不能证明没有效果；解释差值前应先修复有效性问题。</p></details>
+      <details><summary>打包构建找不到地图或情景</summary><p>在启用 FrameDoctor 的情况下打包 Development 构建。烘焙时同时包含地图和情景。使用 <code>/Game/...</code> 资产路径及 Blueprint 类后缀 <code>_C</code>。从保留的完整构建文件夹中选择可执行文件。</p></details>
+      <details><summary>记录失败、停止或超出磁盘限制</summary><p>阅读已保存运行的状态和原因。检查磁盘空间、写入权限、跟踪大小限制，以及是否有其他记录器正在运行。下次记录时减少事件详细程度或时长。保持 Play 运行，测量期间避免切换地图或更改画质设置。</p></details>
+      <details><summary>Open in Insights 无法打开跟踪</summary><p>安装对应引擎的 Unreal Insights 工具，确保原始跟踪仍然可用。FrameDoctor 打开的是同一原始文件；准确的计时器、线程和区间需要手动定位。如果引擎无法打开含非 ASCII 字符的路径，请保留原始记录，并使用简单的 ASCII 工作路径。</p></details>
+      <details><summary>报告能打开，但原始跟踪缺失</summary><p>导出的报告可能无需跟踪也能查看，但重新确认需要原始有效数据。请重新导出包含原始跟踪的包，或恢复完整的原始运行文件夹。JSON 脱敏不会生成缺失的跟踪。</p></details>
+</section>
+<section class="doc-section" id="glossary" data-title="简明术语表" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">13</span><h2>简明术语表</h2></div>
+
+      <dl><dt>Project / map（项目／地图）</dt><dd>游戏的工作空间／保存在其中的一个关卡或场景。</dd><dt>Blueprint（蓝图）</dt><dd>用于可视化脚本的 Unreal 资产。你通过连接节点编程，而不必编写 C++。</dd><dt>PIE</dt><dd>Play In Editor，即在 Unreal Editor 内运行游戏。</dd><dt>Development / Shipping</dt><dd>用于开发的构建／最终发布配置。打包记录应使用 Development。</dd><dt>Trace / .utrace（跟踪）</dt><dd>记录计时事件的原始文件。</dd><dt>Scope / timer / thread（作用域／计时器／线程）</dt><dd>测量的一段工作／它的名称／运行这段工作的 CPU 工作流。</dd><dt>ms / FPS</dt><dd>每帧毫秒数／每秒帧数。每帧耗时 16.67 ms 时，游戏每秒大约生成 60 帧。</dd><dt>Mean / p95 / p99（平均值／p95／p99）</dt><dd>平均帧耗时／95%／99% 的完整帧耗时不超过的值。百分位数越高，越侧重较慢的帧。</dd><dt>Warmup / measurement（预热／测量）</dt><dd>不计入结果的稳定等待时间／用于计算结果的区间。</dd><dt>Baseline / candidate / pair（基准／候选／配对）</dt><dd>原始构建／包含修改的构建／两者各运行一次后组合使用。</dd><dt>Noise / threshold（噪声／阈值）</dt><dd>重复运行之间的变化／确认效果所需的最小稳定变化。</dd><dt>Cook（烘焙）</dt><dd>Unreal 准备资产，使其能在打包游戏中运行的过程。</dd><dt>Manifest / profile（清单／配置）</dt><dd>记录保存的条件和状态／为记录选择的设置。</dd></dl>
+</section>
+<section class="doc-section" id="support" data-title="版本与支持" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">14</span><h2>版本与支持</h2></div>
+
+      <p><strong>FrameDoctor 1.0.0 · Unreal Engine 5.5、5.6、5.7 和 5.8 · Windows 64 位。</strong></p>
+      <p>寻求帮助时，请提供引擎和插件版本、使用的是 PIE 还是 Development、点击的操作、保存的状态和原因，以及预期结果。必要时可附上截图或已审查内容的验证数据包。避免分享个人路径或尚未检查的原始日志。</p>
+      <p>如发现本指南有错误或说明不清，请<a href="https://github.com/NexusForgeUE/FrameDoctor-docs/issues">提交文档问题</a>。插件支持请使用 FrameDoctor 产品页面或购买渠道上的支持联系方式。</p>
+</section><footer class="guide-footer"><span>FrameDoctor 文档。NexusForgeUE。</span><a href="#overview">返回顶部</a></footer></main></div>
+</body>
+</html>

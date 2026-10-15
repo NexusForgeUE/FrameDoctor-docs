@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="site-root" content="../">
+<meta name="description" content="FrameDoctor のインストール、初めての Unreal Engine CPU トレースの記録、フレーム時間の読み取り、手動で加えた変更の比較、検証データの共有を説明します。">
+<meta name="theme-color" content="#141619">
+<title>FrameDoctor ドキュメント | Unreal Engine 5.5–5.8</title>
+<link rel="canonical" href="https://nexusforgeue.github.io/FrameDoctor-docs/ja/">
+<link rel="alternate" hreflang="en" href="https://nexusforgeue.github.io/FrameDoctor-docs/">
+<link rel="alternate" hreflang="ru" href="https://nexusforgeue.github.io/FrameDoctor-docs/ru/">
+<link rel="alternate" hreflang="de" href="https://nexusforgeue.github.io/FrameDoctor-docs/de/">
+<link rel="alternate" hreflang="es" href="https://nexusforgeue.github.io/FrameDoctor-docs/es/">
+<link rel="alternate" hreflang="fr" href="https://nexusforgeue.github.io/FrameDoctor-docs/fr/">
+<link rel="alternate" hreflang="ja" href="https://nexusforgeue.github.io/FrameDoctor-docs/ja/">
+<link rel="alternate" hreflang="ko" href="https://nexusforgeue.github.io/FrameDoctor-docs/ko/">
+<link rel="alternate" hreflang="pt-BR" href="https://nexusforgeue.github.io/FrameDoctor-docs/pt-BR/">
+<link rel="alternate" hreflang="zh-Hans" href="https://nexusforgeue.github.io/FrameDoctor-docs/zh-Hans/">
+<link rel="alternate" hreflang="x-default" href="https://nexusforgeue.github.io/FrameDoctor-docs/">
+<link rel="icon" type="image/svg+xml" href="../assets/framedoctor.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/app.js" defer></script>
+</head>
+<body data-search-empty="一致する章がありません。検索語を短くしてみてください。" data-search-results="{count} 件の章が一致">
+<a class="skip-link" href="#main">ガイド本文へ移動</a>
+<header class="site-header"><a class="brand" href="#overview"><img src="../assets/framedoctor.svg" width="40" height="40" alt=""><span>FrameDoctor<small>ドキュメント</small></span></a><div class="header-actions"><label class="language-picker"><span class="visually-hidden">ガイドの言語</span><select id="doc-locale" aria-label="ガイドの言語"><option value="en" lang="en">English</option><option value="ru" lang="ru">Русский</option><option value="de" lang="de">Deutsch</option><option value="es" lang="es">Español</option><option value="fr" lang="fr">Français</option><option value="ja" lang="ja" selected>日本語</option><option value="ko" lang="ko">한국어</option><option value="pt-BR" lang="pt-BR">Português (Brasil)</option><option value="zh-Hans" lang="zh-Hans">简体中文</option></select></label><button type="button" class="print-button" id="print-guide">ガイドを印刷</button><button type="button" class="menu-button" id="menu-toggle" aria-label="章" aria-controls="sidebar" aria-expanded="false"><span class="menu-caption">章</span><svg class="menu-icon" aria-hidden="true" width="18" height="18" viewBox="0 0 18 18"><path d="M2 4h14M2 9h14M2 14h14" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button></div></header>
+<div class="veil" id="menu-veil" aria-hidden="true"></div>
+<div class="layout"><aside class="sidebar" id="sidebar"><div class="search-box"><label for="doc-search">このガイドを検索</label><input id="doc-search" type="search" placeholder="検索例：初めての記録、p95、Blueprint" autocomplete="off" aria-controls="search-results"><div class="search-results" id="search-results" hidden></div><p class="visually-hidden" id="search-status" role="status" aria-live="polite"></p></div><nav aria-label="ガイドの目次"><p class="nav-heading">ここから始める</p><a href="#overview" aria-current="location"><span class="nav-number" aria-hidden="true">1</span><span>概要</span></a>
+<a href="#installation"><span class="nav-number" aria-hidden="true">2</span><span>インストール</span></a>
+<a href="#first-capture"><span class="nav-number" aria-hidden="true">3</span><span>初めての記録</span></a>
+<a href="#capture"><span class="nav-number" aria-hidden="true">4</span><span>記録の設定</span></a>
+<p class="nav-heading">読み取りと比較</p><a href="#findings"><span class="nav-number" aria-hidden="true">5</span><span>Findings</span></a>
+<a href="#frame-chart"><span class="nav-number" aria-hidden="true">6</span><span>フレーム時間グラフ</span></a>
+<a href="#development"><span class="nav-number" aria-hidden="true">7</span><span>A と B の準備</span></a>
+<a href="#compare"><span class="nav-number" aria-hidden="true">8</span><span>実行結果の比較</span></a>
+<p class="nav-heading">作業を続ける</p><a href="#runs"><span class="nav-number" aria-hidden="true">9</span><span>実行履歴とエクスポート</span></a>
+<a href="#profiles"><span class="nav-number" aria-hidden="true">10</span><span>プロファイルと制限</span></a>
+<a href="#scenarios"><span class="nav-number" aria-hidden="true">11</span><span>独自のシナリオ</span></a>
+<a href="#troubleshooting"><span class="nav-number" aria-hidden="true">12</span><span>トラブルシューティング</span></a>
+<a href="#glossary"><span class="nav-number" aria-hidden="true">13</span><span>用語集</span></a>
+<a href="#support"><span class="nav-number" aria-hidden="true">14</span><span>バージョンとサポート</span></a></nav><div class="sidebar-footer"><span>FrameDoctor 1.0.0</span><span>Unreal Engine 5.5–5.8</span><span>Windows 64 ビット</span></div></aside>
+<main class="guide" id="main" tabindex="-1"><section class="doc-section overview" id="overview" data-title="FrameDoctor でできること" tabindex="-1"><div class="compatibility"><span>Unreal Engine 5.5–5.8</span><span>Windows 64 ビット</span></div><h1>FrameDoctor ユーザーガイド</h1><p class="lead">シーンで何が起きているかを記録し、時間のかかる CPU 処理を見つけ、手動で加えた変更が改善につながるかを確認します。Unreal Engine のプロジェクトが初めてでも、ここから始められます。</p><div class="intro-actions"><a class="primary" href="#first-capture">初めての記録を行う</a><a class="secondary" href="#installation">FrameDoctor をインストール</a></div><ol class="workflow" aria-label="FrameDoctor ユーザーガイド"><li>シーンを記録</li><li>データを読む</li><li>変更を 1 つ加える</li><li>実行結果を比較</li><li>結果を保存</li></ol>
+
+      <p>フレームとは、ゲームの 1 枚の画像です。<strong>フレーム時間</strong>は、ゲームが次のフレームを生成するまでにかかる時間です。長いフレームは、停止やカクつきとして感じられます。FrameDoctor はタイミングイベントを含むトレースファイルを記録し、そのイベントをグラフと CPU スコープ一覧にまとめます。</p>
+      <ul><li><strong>Capture：</strong>実行中のシーンを記録します。</li><li><strong>Findings：</strong>フレーム時間を読み、個々の CPU 処理を調べます。</li><li><strong>Compare：</strong>変更前後の、保存しておいた 2 つの Development ビルドを測定します。</li><li><strong>Runs：</strong>過去の記録を開き直し、検証データをエクスポートします。</li><li><strong>Settings：</strong>記録用プロファイルを保存し、しきい値を選びます。</li></ul>
+      <div class="callout"><strong>変更を加えるのはユーザーです。</strong>FrameDoctor は調査と測定を支援します。コードを書き換えたり、ゲームを自動で修正したりはしません。解析はローカルで行われます。</div>
+      <p>このガイドは翻訳されていますが、ここに示すプラグインの操作項目は英語のラベルを使用しています。言語選択で切り替わるのは、このガイドの言語です。慣れない Unreal 用語は<a href="#glossary">簡単な用語集</a>で確認できます。</p>
+</section>
+<section class="doc-section" id="installation" data-title="FrameDoctor をインストールして開く" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">2</span><h2>FrameDoctor をインストールして開く</h2></div>
+
+      <p>FrameDoctor は、<strong>Windows 64 ビット上の Unreal Engine 5.5、5.6、5.7、5.8</strong>に対応しています。使用するエンジンのバージョンに合ったプラグインパッケージを選んでください。</p>
+      <h3>Unreal を初めて開く場合</h3><p><strong>Epic Games Launcher → Unreal Engine → Library</strong>を開き、インストール済みのエンジンを起動します。既存のプロジェクトを開くか、<strong>Games → Blank → Blueprint</strong>を選び、プロジェクト名とフォルダーを入力して<strong>Create</strong>をクリックします。プロジェクトにはゲーム全体を保存します。マップはレベルとも呼ばれ、その中の 1 つのシーンを保存します。</p>
+      <h3>Fab からインストールする</h3><ol role="list"><li>Unreal Editor を閉じます。ランチャーの<strong>Fab Library</strong>で FrameDoctor を見つけ、<strong>Install to Engine</strong>をクリックします。</li><li>プロジェクトで使うエンジンのバージョンを選び、インストールを完了します。</li><li>プロジェクトを開きます。<strong>Edit → Plugins</strong>で<strong>FrameDoctor</strong>を検索して有効にし、再起動を求められたらエディタを再起動します。</li><li>エディタのメインメニューから<strong>Tools → FrameDoctor</strong>を開きます。</li></ol>
+      <h3>提供された ZIP からインストールする</h3><ol role="list"><li>エディタを閉じ、プラグインを展開します。</li><li>展開した単一の<code>FrameDoctor</code>フォルダーを、プロジェクトの<code>Plugins</code>フォルダーに配置します。<code>Plugins</code>がなければ作成してください。</li><li>下記のパスを確認します。<code>FrameDoctor/FrameDoctor</code>のように余分に入れ子にならないようにします。</li><li>プロジェクトを開き、<strong>Edit → Plugins</strong>でプラグインを有効にします。再起動してから<strong>Tools → FrameDoctor</strong>を開きます。</li></ol>
+      <pre><code>YourProject/
+  YourProject.uproject
+  Plugins/
+    FrameDoctor/
+      FrameDoctor.uplugin
+      Content/
+      Resources/
+      Source/</code></pre>
+      <details><summary>Unreal にモジュールのコンパイルを求められたら</summary><p>コンパイル済みのパッケージには<code>Binaries</code>も含まれます。ソースのみのパッケージには、ゲームが Blueprint を使っていても、対応する C++ コンパイラのツールチェーンが必要です。Visual Studio 2022 に<strong>Game development with C++</strong>と、エンジンが必要とする Windows SDK をインストールします。Blueprint のみのプロジェクトでは、<strong>Tools → New C++ Class</strong>で最小限のクラスを追加し、C++ のプロジェクトターゲットを作成します。Unreal を閉じ、Visual Studio でプロジェクトの<strong>Development Editor / Win64</strong>ターゲットをビルドします。その後、プロジェクトを開き直してください。コンパイルに失敗した場合は、最初のビルドエラーを読み、エンジンとパッケージのバージョンが一致しているか確認します。</p></details>
+      <p class="reference">Epic のガイド：<a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/working-with-plugins-in-unreal-engine">プラグインの有効化とインストール</a>。</p>
+</section>
+<section class="doc-section" id="first-capture" data-title="初めての記録" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">3</span><h2>初めての記録</h2></div>
+
+      <p>最初は 1 つのシーンと付属のサンプルシナリオを使います。<strong>シナリオ</strong>は、シーンの準備が整い、測定を開始できるタイミングを FrameDoctor に伝えます。このサンプルは、操作を学び、シーンを調査するのに適しています。</p>
+      <ol role="list"><li><strong>マップを開いて保存します。</strong>調べたいシーンを開き、<strong>File → Save All</strong>を実行します。</li><li><strong>Play を開始します。</strong>エディタのツールバーにある三角形の<strong>Play</strong>ボタンをクリックします。これが Play In Editor、略して PIE です。<kbd>Shift</kbd> + <kbd>F1</kbd>を押すとマウスが解放され、ゲームを動かしたままエディタを操作できます。</li><li><strong>Capture を選びます。</strong><strong>Tools → FrameDoctor → Capture</strong>を開きます。<strong>Use a packaged Development build</strong>はオフのままにします。PIE は、すでに Play で実行しているマップを記録します。Map 欄で別のマップを選んでも、そのワールドは切り替わりません。</li><li><strong>サンプルを選びます。</strong><strong>Scenario</strong>で<code>BP_ExploratoryScenario</code>を検索します。アセットを探すには、Content Browser、または<kbd>Ctrl</kbd> + <kbd>Space</kbd>で Content Drawer を開き、設定で<strong>Show Plugin Content</strong>を有効にして、<strong>FrameDoctor Content → FrameDoctor → Examples</strong>を確認します。シナリオは FrameDoctor で選択します。レベルにドラッグする必要はありません。</li><li><strong>記録します。</strong><strong>ウォームアップを 10 秒</strong>、<strong>測定を 60 秒</strong>のままにします。Preflight を読み、<strong>Capture running PIE</strong>をクリックします。Play を動かしたまま、調べたい操作を行います。ウォームアップは測定結果に含まれません。</li><li><strong>Findings を読みます。</strong>記録が完了したら、まだ選択されていなければ<strong>Findings</strong>を開きます。<strong>Capture quality and unavailable reasons</strong>を読んでから、CPU スコープを選び、その検証データを確認します。</li></ol>
+      <div class="callout"><strong>最初のサンプルは探索用です。</strong>このサンプルの説明は、再現可能なゲーム条件を定めていません。トレースを調べることはできますが、A/B の効果を確認するには、<a href="#scenarios">条件を適切に記述したシナリオ</a>と<a href="#development">2 つの Development ビルド</a>を使用してください。</div>
+      <p>記録が終わるまでゲームを動かし続けてください。<kbd>Esc</kbd>やエディタの Stop ボタンで PIE が終了し、記録が中断される場合があります。FrameDoctor の現在の処理をキャンセルするには、FrameDoctor 内の<strong>Cancel</strong>を使います。</p>
+</section>
+<section class="doc-section" id="capture" data-title="記録する対象を選ぶ" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">4</span><h2>記録する対象を選ぶ</h2></div>
+
+      <p><strong>Capture</strong>には 2 つの対象があります。<strong>Use a packaged Development build</strong>がオフなら、現在の PIE ワールドを記録します。オンなら、FrameDoctor が別のパッケージ化されたゲームを起動します。再現可能な変更前後の測定には、パッケージ化したゲームを使ってください。</p>
+      <div class="table-scroll"><table><caption>Capture の操作項目</caption><thead><tr><th>項目</th><th>使い方</th></tr></thead><tbody><tr><td>Baseline Development executable</td><td>Browse で保存済みのビルド A を選択します。このパスは Compare と共通です。</td></tr><tr><td>Map と Scenario</td><td>シナリオクラスを選択します。Development では、クック済みマップとシナリオクラスのパスを指定します。</td></tr><tr><td>Warmup</td><td>準備完了後、シーンが安定するまで待つ時間です。測定には含みません。</td></tr><tr><td>Measurement</td><td>結果に含める時間です。最初は 60 秒にします。</td></tr><tr><td>Detailed naming for investigation</td><td>名前付きイベントをより多く含めます。追加の負荷がかかるため、A/B の両方で同じ設定にします。</td></tr><tr><td>Preflight</td><td>開始前に、選択したモード、トレースチャンネル、ディスク空き容量を確認します。</td></tr></tbody></table></div>
+      <p>通常の CPU プロファイルは<code>cpu,frame,bookmark</code>を使用します。CPU イベントは処理を表し、frame イベントはフレームの境界を示し、bookmark は測定区間を示します。外部での記録がすでに進行中の場合は、それを終了してから FrameDoctor 自身のトレースを開始する必要があります。</p>
+      <p>準備完了、ウォームアップ、測定の順に進みます。<strong>Ready timeout</strong>と<strong>Maximum trace size</strong>は<a href="#profiles">Settings</a>で設定します。キャンセルまたは中断された記録は、その状態とともに保持されます。比較用の完了済みベースラインとしては使用できません。</p>
+      <figure><a href="../assets/screens/capture.png" target="_blank" rel="noopener" aria-label="画像を原寸で開く: Development の対象、マップ、シナリオ、ウォームアップ、測定、Preflight を表示した Capture ページ。"><img src="../assets/screens/capture.png" width="1920" height="1080" alt="Development の対象、マップ、シナリオ、ウォームアップ、測定、Preflight を表示した Capture ページ。" loading="lazy"></a><figcaption>パッケージ化した Development の設定例。最初の PIE 記録では、パッケージビルドのチェックボックスをオフのままにします。</figcaption></figure>
+</section>
+<section class="doc-section" id="findings" data-title="CPU の検証データを読む" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">5</span><h2>CPU の検証データを読む</h2></div>
+
+      <h3>既存のトレースを開く</h3><p><strong>Import trace</strong>をクリックし、記録が終了した<code>.utrace</code>ファイルを選んで、Findings が表示されるまで待ちます。インポートの前に記録を停止してください。比較の出所を確認する必要がある場合は、トレースと同じ場所の<code>manifest.json</code>および元の実行記録のファイル一式を、トレースとともに保持します。<strong>Capture quality and unavailable reasons</strong>を読み、利用可能な CPU、フレーム、測定のデータを確認してください。</p>
+      <p>FrameDoctor の測定開始と測定終了を示すブックマークが、完全な 1 組として一意に特定できない場合、トレース全体が探索用の記録として解析されます。実行のマニフェストがない場合や対応していない形式の場合は、記録の完全性が未検証のままになります。利用可能なイベントは調べられますが、未検証のデータや探索用のデータを、確認済みの A/B ベースラインとして使うことはできません。</p>
+      <p>まず、記録の状態と品質を確認します。データが不完全な場合や値が<strong>Unavailable</strong>の場合は、<strong>Capture quality and unavailable reasons</strong>を開きます。Unavailable は値を確定できなかったという意味であり、ゼロという意味ではありません。</p>
+      <ol role="list"><li><strong>Game frame p95</strong>と測定時間を確認します。グラフの曲線をフレーム予算と比較します。</li><li><strong>Search scopes…</strong>でタイマー名を探すか、<strong>All threads</strong>でスレッドを選択します。スレッドは CPU 上の処理の流れです。GameThread は通常、ゲームロジックを実行します。</li><li>スコープの行をクリックします。パネルには<strong>Measured</strong>（測定内容）、<strong>Interpretation</strong>（結果の解釈）、<strong>Next experiment</strong>（次に試す検証）、<strong>Behavior risk</strong>（動作への影響リスク）の説明が表示されます。</li><li><strong>Copy evidence</strong>で選択中のタイマー、スレッド、区間を特定する情報をコピーします。<strong>Open in Insights</strong>で同じトレースを Unreal Insights に開き、該当区間へ手動で移動します。</li></ol>
+      <p><strong>Exclusive / frame</strong>は、同じスレッド上の子スコープの時間を差し引いたスコープ時間を、有効なフレームで平均した値です。<strong>Calls</strong>は、測定区間内で開始した呼び出しを数えます。スコープには待機時間が含まれる場合があります。名前だけで特定のアセットを識別したり、1 つの Blueprint ノードのコストを証明したりはできません。</p>
+      <div class="callout"><strong>検索には表示件数の上限があります。</strong>表には順位順の先頭 250 行が読み込まれます。検索とスレッドの絞り込みは、その読み込まれた行に適用されます。その他のスコープ集計は、完全な解析 JSON に保持されています。表を元に戻すには<strong>Clear filters</strong>を使います。</div>
+      <p>フレームのコストを見積もるために、入れ子の包含時間や並列スレッドの時間を足し合わせないでください。ゲームフレーム、レンダーフレーム、GPU キューの文脈は、それぞれ意味が異なります。信頼できる GPU フレーム値がなければ、その値は利用不可のままです。</p>
+      <figure><a href="../assets/screens/findings.png" target="_blank" rel="noopener" aria-label="画像を原寸で開く: 実際のフレームグラフ、選択中の EnemyAwareness::Update スコープ、その検証データパネルを表示した Findings。"><img src="../assets/screens/findings.png" width="1920" height="1080" alt="実際のフレームグラフ、選択中の EnemyAwareness::Update スコープ、その検証データパネルを表示した Findings。" loading="lazy"></a><figcaption>スコープを選択すると、測定したコストと次の調査手順が結び付きます。表示値は記録の一例です。</figcaption></figure>
+</section>
+<section class="doc-section" id="frame-chart" data-title="フレーム時間グラフを調べる" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">6</span><h2>フレーム時間グラフを調べる</h2></div>
+
+      <p>横軸は測定中の経過時間、縦軸はミリ秒単位のフレーム時間です。山が高いほどフレームが遅くなっています。破線の予算線は選択した目標値です。<strong>16.67 ms</strong>は、およそ毎秒 60 フレームに相当します。</p>
+      <ul><li><strong>拡大・縮小：</strong>グラフ上でマウスホイールを使うか、その下の小さな全体表示にある琥珀色のハンドルをドラッグします。</li><li><strong>表示範囲の移動：</strong>全体表示の選択範囲の内側をドラッグします。グラフにキーボードフォーカスがあるときは、左右の矢印キーでも表示範囲を移動できます。</li><li><strong>値の確認：</strong>グラフ上でポインターを動かします。時間または集約されたバケット、サンプル数、取得可能な最短・最長時間が表示されます。</li><li><strong>リセット：</strong><strong>Reset view</strong>をクリックします。フォーカス中のグラフは、<kbd>Home</kbd>または<kbd>Esc</kbd>でもリセットできます。</li></ul>
+      <div class="callout"><strong>拡大・縮小で変わるのは表示範囲です。</strong>見出しの p95、CPU スコープ一覧、検証データは、引き続き測定全体を使用します。表示範囲を狭くしても、その範囲について再計算されるわけではありません。</div>
+      <p>広い範囲を表示すると、複数のフレームが 1 つの描画用バケットにまとめられる場合があります。1 フレームと見なさず、バケットのサンプル数と値の範囲を読んでください。フレームデータが欠けている箇所は、空白のまま表示されます。</p>
+      <figure><a href="../assets/screens/chart.png" target="_blank" rel="noopener" aria-label="画像を原寸で開く: 全体表示のハンドル、ポインター位置のバケット情報、変わらない測定全体の指標を示す、拡大したフレーム時間グラフ。"><img src="../assets/screens/chart.png" width="1920" height="1080" alt="全体表示のハンドル、ポインター位置のバケット情報、変わらない測定全体の指標を示す、拡大したフレーム時間グラフ。" loading="lazy"></a><figcaption>全体表示は現在見えている部分を示します。引き続き記録全体を表す値は、説明文で確認できます。</figcaption></figure>
+</section>
+<section class="doc-section" id="development" data-title="2 つの Development ビルドを用意する" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">7</span><h2>2 つの Development ビルドを用意する</h2></div>
+
+      <p><strong>Development ビルド</strong>は、開発用機能を有効にした状態でエディタの外から実行できる、パッケージ化されたゲームです。<strong>Baseline A</strong>は元のビルド、<strong>Candidate B</strong>は意図した変更を 1 つ含むビルドです。完全なビルド一式を、それぞれ別のフォルダーに保持してください。</p>
+      <ol role="list"><li>マップと<a href="#scenarios">比較に使えるシナリオ</a>を保存します。プロジェクトで FrameDoctor を有効にします。</li><li><strong>Edit → Project Settings → Packaging</strong>を開きます。<strong>List of maps to include in a packaged build</strong>にマップを追加します。シナリオの Blueprint もクックされるようにしてください。含めるコンテンツからのハード参照を保持するか、<strong>Additional Asset Directories to Cook</strong>にそのフォルダーを追加します。</li><li>エディタの<strong>Platforms → Windows</strong>にあるパッケージ化の操作項目で、ビルド構成に<strong>Development</strong>を選び、プロジェクトをパッケージ化します。エンジンのバージョンにより、メニューのまとまり方は異なる場合があります。出力一式をビルド A として保存します。</li><li>試したい変更を手動で 1 つ加えます。保存し、別のディレクトリにビルド B をパッケージ化します。シーン、入力、カメラ、NPC、記録設定を同じ条件に保ちます。</li><li><strong>Capture</strong>で<strong>Use a packaged Development build</strong>をオンにします。A の実行ファイルを参照して選び、マップを選択し、シナリオの生成クラスパスを入力します。</li></ol>
+      <pre><code>Map: /Game/Maps/TestMap
+Scenario: /Game/Scenarios/BP_TestScenario.BP_TestScenario_C
+Executable: BuildA/Windows/YourProject/Binaries/Win64/YourProject.exe</code></pre>
+      <p>アセット名は自分のものに置き換えてください。<code>/Game</code>は Unreal から見たプロジェクトの Content フォルダーであり、Windows のドライブではありません。生成された Blueprint クラスの末尾には<code>_C</code>が付きます。コンテンツを含むパッケージフォルダー全体を保持してください。実行ファイルだけのコピーでは不十分です。</p>
+      <p>Preflight は指定された設定を確認します。その外部ビルドにマップとシナリオが含まれているかは、実際の読み込みで確認されます。記録は開発用構成が対象です。<strong>Shipping と Test ビルドでは FrameDoctor の記録は行えません</strong>。</p>
+      <p class="reference">Epic のガイド：<a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/packaging-your-project">Unreal プロジェクトのパッケージ化</a>。</p>
+</section>
+<section class="doc-section" id="compare" data-title="変更が改善につながったかを確認する" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">8</span><h2>変更が改善につながったかを確認する</h2></div>
+
+      <ol role="list"><li>前述の手順で A と B を用意します。<strong>Compare</strong>で<strong>New Development comparison</strong>を展開します。</li><li><strong>Baseline Development executable</strong>と<strong>Candidate Development executable</strong>を選びます。<strong>Intended change</strong>に、何を変更したかを正確に記述します。</li><li>起動前に<strong>Primary metric</strong>を選びます。遅いフレームには<code>p95GameFrame</code>、平均フレーム時間には<code>meanGameFrame</code>、特に遅い末尾側のフレームには<code>p99GameFrame</code>を使います。</li><li>最初は<strong>5 ペア</strong>、ウォームアップ 10 秒、測定 60 秒にします。意図したビルド変更について、通常の許容差分は<code>gameBuildId</code>のみとします。解像度、グラフィックス設定、VSync、フレーム上限、シナリオ、計測設定を一致させます。</li><li><strong>Launch paired Development series</strong>をクリックします。FrameDoctor は保存済みのビルドを AB/BA の交互順で実行します。シリーズが終わるまで、両方のビルドフォルダーを変更しないでください。</li><li>判定とその理由、ペア差分、ノイズ、しきい値、各ペアの生データを読みます。保存された結果は<strong>Open HTML report</strong>または<strong>Open report folder</strong>で開けます。</li></ol>
+      <div class="table-scroll"><table><caption>比較判定の意味</caption><thead><tr><th>判定</th><th>次に行うこと</th></tr></thead><tbody><tr><td>Improved</td><td>選択したフレーム時間の指標が、確認用のしきい値を超えて一貫して減少しました。ゲームプレイの正しさは別途確認してください。</td></tr><tr><td>Regressed</td><td>選択した指標が、しきい値を超えて一貫して増加しました。変更を調査するか、元に戻してください。</td></tr><tr><td>Inconclusive</td><td>効果が小さすぎる、一貫していない、または有効なデータが足りません。同等であることや効果がないことを示すものではありません。</td></tr><tr><td>InvalidComparison</td><td>これらの実行結果では有効な比較ができません。不一致やデータ不足の理由を読み、先に修正してください。</td></tr></tbody></table></div>
+      <p>効果の確認には、比較可能な条件に加えて、<strong>少なくとも 5 つの完全なペア、各実行で 30 秒の測定、300 個の完全かつ有効なフレーム</strong>が必要です。短い記録も探索には役立ちます。付属の探索用シナリオでは、効果を確認できません。</p>
+      <p>ミリ秒の値は低いほど良好です。<strong>ペア差分</strong>は、各ペアの<code>B − A</code>の差の中央値です。表示された 2 つの中央値を引いた値とは異なる場合があります。効果は、絶対しきい値、相対しきい値、推定ノイズのうち最大のものを超え、少なくとも 80% のペアで方向が一致する必要があります。既定値は 0.5 ms と 5% です。これらの確認は安定性の判断を助けますが、それだけで原因を特定するものではありません。</p>
+      <p>完了したシリーズを開き直すには、<strong>Import series and export report</strong>を使い、その<code>series.json</code>を選択します。許容差分を設定しても、計測設定や計算方法の不一致は許容できません。</p>
+      <figure><a href="../assets/screens/compare.png" target="_blank" rel="noopener" aria-label="画像を原寸で開く: 判定、個々の実行、ペア差分、ノイズ、しきい値を示した、実際の 5 ペアの比較。"><img src="../assets/screens/compare.png" width="1920" height="1080" alt="判定、個々の実行、ペア差分、ノイズ、しきい値を示した、実際の 5 ペアの比較。" loading="lazy"></a><figcaption>要約された判定とともに、すべてのペアとその条件を確認してください。</figcaption></figure>
+</section>
+<section class="doc-section" id="runs" data-title="検証データを開き直して共有する" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">9</span><h2>検証データを開き直して共有する</h2></div>
+
+      <p><strong>Runs</strong>を開き、<strong>Refresh saved runs</strong>をクリックします。行を選ぶと、元データの詳細を確認できます。実行結果をダブルクリックするか、<strong>Open selected evidence</strong>をクリックすると Findings が再び開きます。シリーズの場合はペア比較レポートが開きます。</p>
+      <p>既定の出力先は<code>&lt;YourProject&gt;/Saved/FrameDoctor</code>です。Settings で別の出力フォルダーを選べます。単一の実行には、元の<code>.utrace</code>、マニフェスト、解析が保持されます。シリーズには<code>series.json</code>、<code>comparison.json</code>、HTML レポート、元の実行への参照が保持されます。</p>
+      <ol role="list"><li>共有したいシリーズを読み込みます。</li><li><strong>Include source traces in the export</strong>で、元のトレースを含めるかを選びます。状況に応じて<strong>Remove absolute paths and username from exported JSON</strong>をオンのままにします。</li><li><strong>Export paired series bundle</strong>をクリックし、出力先を選んで完了を待ちます。</li><li>エクスポートされたファイルを確認し、結果を確認する相手にバンドル一式を送ります。</li></ol>
+      <div class="callout"><strong>生トレースには元の内容が残ります。</strong>JSON の伏せ字処理は、トレース内のパスやメッセージを除去しません。エクスポートの 2 つのチェックボックスは、既定では両方ともオンです。確認用パッケージを小さくするためにトレースを省くことはできますが、移動後に結果を再確認するには、受け手に元の有効な実行データと生トレースが必要です。</div>
+      <p><strong>Promote current run to baseline</strong>は、条件を満たす完了済みかつ比較可能な実行を<code>&lt;YourProject&gt;/FrameDoctor/Baselines</code>に保存します。短い記録や探索用の記録は対象になりません。調査や再確認が不要になるまで、元のデータを保持してください。</p>
+      <figure><a href="../assets/screens/runs.png" target="_blank" rel="noopener" aria-label="画像を原寸で開く: 保存済みの完了した実行、元のトレースの利用可否、エクスポート項目、選択中の元の記録。"><img src="../assets/screens/runs.png" width="1920" height="1080" alt="保存済みの完了した実行、元のトレースの利用可否、エクスポート項目、選択中の元の記録。" loading="lazy"></a><figcaption>元のトレースが利用可能なら、レポートと実際の記録を結び付けて確認できます。</figcaption></figure>
+</section>
+<section class="doc-section" id="profiles" data-title="繰り返し使う設定を保存する" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">10</span><h2>繰り返し使う設定を保存する</h2></div>
+
+      <p><strong>プロファイル</strong>は、保存した記録・解析設定の組み合わせです。<strong>Settings</strong>で Profile ID と名前を選び、各項目を設定して<strong>Save profile</strong>を使います。プロファイルの JSON ファイルを開き直すには<strong>Load profile</strong>を使います。プロジェクトの履歴で管理したい場合は、プロジェクトの<code>FrameDoctor/Profiles</code>フォルダーにプロファイルを保持します。</p>
+      <div class="table-scroll"><table><caption>最初に理解しておきたい設定</caption><thead><tr><th>設定</th><th>意味</th></tr></thead><tbody><tr><td>Trace channels</td><td>通常の CPU・フレーム記録には cpu,frame,bookmark を使います。</td></tr><tr><td>Ready timeout</td><td>ウォームアップの開始前に、シナリオの準備完了を待つ時間です。</td></tr><tr><td>Maximum trace size</td><td>1 つのトレースに使えるディスク容量です。超えた実行は失敗し、部分的なデータが保持されます。</td></tr><tr><td>Frame budget</td><td>目標のフレーム時間です。既定値は 16.67 ms です。</td></tr><tr><td>Hitch threshold</td><td>長いフレームとして数えるしきい値です。既定値は 50 ms です。</td></tr><tr><td>Absolute / relative effect threshold</td><td>ノイズの確認を考慮する前に必要な、比較効果の最小値です。既定値は 0.5 ms と 5% です。</td></tr><tr><td>Output folder</td><td>新しい記録とレポートの保存先です。空欄なら既定の Saved/FrameDoctor を使います。</td></tr></tbody></table></div>
+      <p>A/B の両方で同じプロファイルを使います。実験を始める前に、目的に合うようしきい値を変更してください。処理の実行中にフォームを編集しても、その処理に記録された設定は書き換わりません。対応していない新しいスキーマのプロファイルは、読み取り専用で開きます。スキーマ番号を手動で変えるのではなく、互換性のあるプラグインを使用してください。</p>
+      <figure><a href="../assets/screens/settings.png" target="_blank" rel="noopener" aria-label="画像を原寸で開く: プロファイル項目、記録制限、解析しきい値、出力先を表示した Settings ページ。"><img src="../assets/screens/settings.png" width="1920" height="1080" alt="プロファイル項目、記録制限、解析しきい値、出力先を表示した Settings ページ。" loading="lazy"></a><figcaption>プロファイルを保存すると、後の記録でも意図して選んだ同じ条件を使えます。</figcaption></figure>
+</section>
+<section class="doc-section" id="scenarios" data-title="再現可能なシナリオを作る" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">11</span><h2>再現可能なシナリオを作る</h2></div>
+
+      <p>変更前後の効果を確認する準備ができたら、この手順を使います。シナリオでは、実際のカメラ、入力、NPC、ランダム性の条件を設定し、記述する必要があります。フックは Blueprint で実装できます。シナリオの作成に C++ は必須ではありません。</p>
+      <ol role="list"><li>Content Browser で<strong>Add → Blueprint Class → All Classes</strong>を選びます。<strong>FrameDoctorScenario</strong>を検索し、プロジェクトのコンテンツに<code>BP_TestScenario</code>を作成します。</li><li>その Blueprint を開きます。<strong>Overrides</strong>メニューから、下記のフックを実装します。これは記録時に選択するオブジェクトであり、レベルに配置する Actor ではありません。</li><li>Blueprint とマップをコンパイル・保存します。FrameDoctor でクラスを選びます。パッケージ化した記録では、<a href="#development">A と B の準備</a>の説明に従い、マップとシナリオをクックの対象に含めます。</li><li>長い比較を始める前に、短い探索用の記録を 1 回行い、準備完了の判定と後片付けを確認します。</li></ol>
+      <div class="table-scroll"><table><caption>シナリオのフック</caption><thead><tr><th>フック</th><th>Blueprint で行うこと</th></tr></thead><tbody><tr><td>Prepare(World)</td><td>実際のシーンの Actor を探し、変更する設定を保存し、カメラ・入力・NPC の状態を設定し、使用するランダムストリームを初期化します。</td></tr><tr><td>IsReady</td><td>必要な Actor、アセット、初期状態の準備が整った後にだけ true を返します。既定では false を返します。一定時間待つだけでは、準備完了を確定できません。</td></tr><tr><td>BeginMeasurement</td><td>ウォームアップ後に、制御した操作を開始します。</td></tr><tr><td>EndMeasurement</td><td>測定終了時にその操作を停止します。開始後のキャンセルも含めて処理します。</td></tr><tr><td>Cleanup</td><td>自分のシナリオによる変更だけを元に戻します。準備の途中やキャンセルにも対応します。</td></tr><tr><td>DescribeScenario</td><td>下記の条件を記述した Frame Doctor Scenario Snapshot を返します。</td></tr></tbody></table></div>
+      <details><summary>シナリオのスナップショットを入力する</summary><p><strong>DescribeScenario</strong>で、<strong>Make Frame Doctor Scenario Snapshot</strong>を戻り値に接続します。次の項目を実際の条件どおりに入力してください。</p><ul><li><strong>ScenarioId / Revision：</strong>空でない、安定した識別子とリビジョン。</li><li><strong>CameraRoute：</strong>実際の固定視点、または再現可能な移動経路。</li><li><strong>InputConditions：</strong>使用する入力、またはプレイヤー入力を排除する方法。</li><li><strong>NpcConditions：</strong>NPC の数と動作。NPC がいない場合も明記します。</li><li><strong>ParametersJson：</strong>省略可能な有効な JSON オブジェクト。たとえば<code>{"route":"fixed","npcCount":0}</code>は、実際にそのシーンを表す場合にのみ使用します。</li><li><strong>SeedPolicy / RandomSeed：</strong>そのシードでゲームのランダム性を実際に初期化する場合のみ Known、ランダム性を使わない場合は NotUsed、条件が確定していない場合は Unknown。</li><li><strong>DeclaredNondeterminism：</strong>物理、ストリーミング、OS のスケジューリングなど、残る変動要因。</li></ul><p>シードの数値を記入するだけでは、ゲームは初期化されません。条件が不明な場合は探索用のままです。付属の BP_ExploratoryScenario は、意図的に空の説明を返します。</p></details>
+      <p>Cleanup で別のシステムの Actor や記録を削除しないでください。性能を変更した後は、ゲームプレイの動作を別途確認します。時間測定の条件が同じでも、新しいロジックの正しさが保証されるわけではありません。</p>
+</section>
+<section class="doc-section" id="troubleshooting" data-title="うまく動かないとき" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">12</span><h2>うまく動かないとき</h2></div>
+
+      <details open><summary>Tools に FrameDoctor がない</summary><p><strong>Edit → Plugins</strong>を確認し、FrameDoctor を有効にして再起動します。パッケージがエンジンに対応しており、<code>FrameDoctor.uplugin</code>がプラグインフォルダーの直下にあるか確認します。ソースを使う場合は、先に Development Editor のビルドを完了してください。</p></details>
+      <details><summary>Capture running PIE を使えない</summary><p><strong>Play</strong>でシーンを開始します。パッケージビルドのチェックボックスをオフのままにし、具象シナリオクラスを選択し、別の処理があれば終了を待ちます。タブを操作するには Shift+F1 で PIE のマウスを解放します。</p></details>
+      <details><summary>サンプルシナリオが表示されない</summary><p>Content Browser の設定で<strong>Show Plugin Content</strong>を有効にします。FrameDoctor の Examples フォルダーで<code>BP_ExploratoryScenario</code>を探し、Capture でそのクラスを選びます。これはレベルの Actor ではありません。</p></details>
+      <details><summary>Ready timeout になる</summary><p>シナリオの準備が時間内に完了しませんでした。<strong>IsReady</strong>のオーバーライド、実際の Actor とアセット、マップ、クック済みクラスのパスを確認します。基底クラスは false を返します。正当な読み込み時間が必要なら Ready timeout を増やしますが、準備完了の判定は実態に合うものにしてください。</p></details>
+      <details><summary>フレーム時間や排他コストが Unavailable になる</summary><p>フレーム時間には、測定区間内の frame イベントと完全なフレームが必要です。排他 CPU コストには、完全で一貫したスコープ階層も必要です。cpu,frame,bookmark を記録し、実行を継続して、保存された理由を読んでください。利用不可の値をゼロとして扱わないでください。</p></details>
+      <details><summary>比較が Inconclusive または InvalidComparison になる</summary><p>理由を読んでください。各実行の状態、5 つの完全なペア、実行ごとの 30 秒の測定と 300 個の完全なフレーム、条件をすべて記述したシナリオ、安定した条件、計測設定の一致を確認します。Inconclusive は効果がない証拠ではありません。差分を解釈する前に、有効性に関する問題を修正してください。</p></details>
+      <details><summary>パッケージビルドでマップやシナリオが見つからない</summary><p>FrameDoctor を有効にして Development ビルドをパッケージ化します。マップとシナリオの両方をクックに含めます。<code>/Game/...</code>のアセットパスと Blueprint クラスの接尾辞<code>_C</code>を使います。保存してある完全なビルドフォルダーから実行ファイルを選んでください。</p></details>
+      <details><summary>記録が失敗する、停止する、ディスク制限を超える</summary><p>保存された実行の状態と理由を読みます。ディスクの空き容量、書き込み権限、トレースサイズの上限、別の記録ツールが動作中でないかを確認します。次の記録では、イベントの詳細度や時間を減らします。Play を動かし続け、測定中はマップやグラフィックス設定を変更しないでください。</p></details>
+      <details><summary>Open in Insights でトレースを開けない</summary><p>使用するエンジン用の Unreal Insights ツールをインストールします。元のトレースを利用できる状態に保ってください。FrameDoctor は同じ元データを開きます。正確なタイマー、スレッド、区間への移動は手動です。エンジンが非 ASCII 文字を含むパスを開けない場合は、元の記録を保持したうえで、単純な ASCII 文字の作業パスを使ってください。</p></details>
+      <details><summary>レポートは開くが元のトレースがない</summary><p>エクスポートしたレポートはトレースなしでも表示できる場合がありますが、再確認には元の有効な生データが必要です。元のトレースを含めて新しいバンドルをエクスポートするか、元の実行フォルダー一式を復元します。JSON の伏せ字処理で、存在しないトレースが作られることはありません。</p></details>
+</section>
+<section class="doc-section" id="glossary" data-title="簡単な用語集" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">13</span><h2>簡単な用語集</h2></div>
+
+      <dl><dt>Project / map（プロジェクト／マップ）</dt><dd>ゲームの作業領域／その中に保存した 1 つのレベルまたはシーン。</dd><dt>Blueprint</dt><dd>ビジュアルスクリプティング用の Unreal アセット。C++ を書く代わりにノードを接続します。</dd><dt>PIE</dt><dd>Play In Editor。Unreal Editor 内でゲームを実行すること。</dd><dt>Development / Shipping</dt><dd>開発用ビルド／最終配布用の構成。パッケージ化したゲームの記録には Development を使います。</dd><dt>Trace / .utrace（トレース）</dt><dd>記録されたタイミングイベントの元ファイル。</dd><dt>Scope / timer / thread（スコープ／タイマー／スレッド）</dt><dd>測定対象の処理区間／その名前／処理が実行された CPU 上の流れ。</dd><dt>ms / FPS</dt><dd>1 フレーム当たりのミリ秒数／1 秒当たりのフレーム数。1 フレーム当たり 16.67 ms なら、ゲームは毎秒およそ 60 フレームを生成します。</dd><dt>Mean / p95 / p99（平均／p95／p99）</dt><dd>平均フレーム時間／完全なフレームの 95%／99% がその値以下に収まる時間。高いパーセンタイルほど、遅いフレームを重視します。</dd><dt>Warmup / measurement（ウォームアップ／測定）</dt><dd>結果に含めない、安定するまでの待機時間／結果の計算に使う区間。</dd><dt>Baseline / candidate / pair（ベースライン／候補／ペア）</dt><dd>元のビルド／変更を加えたビルド／両方をそれぞれ 1 回実行して組み合わせたもの。</dd><dt>Noise / threshold（ノイズ／しきい値）</dt><dd>繰り返しごとの変動／確認に必要な最小限の安定した効果。</dd><dt>Cook（クック）</dt><dd>パッケージ化したゲームでアセットを実行できるようにする、Unreal の準備処理。</dd><dt>Manifest / profile（マニフェスト／プロファイル）</dt><dd>記録に保存された条件と状態／記録用に選んだ設定。</dd></dl>
+</section>
+<section class="doc-section" id="support" data-title="バージョンとサポート" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">14</span><h2>バージョンとサポート</h2></div>
+
+      <p><strong>FrameDoctor 1.0.0 · Unreal Engine 5.5、5.6、5.7、5.8 · Windows 64 ビット。</strong></p>
+      <p>サポートを依頼するときは、エンジンとプラグインのバージョン、PIE と Development のどちらを使ったか、クリックした操作、保存された状態と理由、期待した結果を含めてください。役立つ場合は、スクリーンショットや内容を確認済みの検証データバンドルを添付します。個人のパスや、内容を確認していない生ログの共有は避けてください。</p>
+      <p>このガイドの誤りや分かりにくい説明については、<a href="https://github.com/NexusForgeUE/FrameDoctor-docs/issues">ドキュメントの Issue を作成</a>してください。プラグインのサポートには、FrameDoctor の製品ページまたは購入先に記載されたサポート窓口を利用してください。</p>
+</section><footer class="guide-footer"><span>FrameDoctor ドキュメント。NexusForgeUE。</span><a href="#overview">先頭へ戻る</a></footer></main></div>
+</body>
+</html>

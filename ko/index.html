@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="site-root" content="../">
+<meta name="description" content="FrameDoctor 설치, 첫 Unreal Engine CPU 트레이스 기록, 프레임 시간 읽기, 직접 수정한 결과 비교, 근거 데이터 공유 방법을 알아보세요.">
+<meta name="theme-color" content="#141619">
+<title>FrameDoctor 문서 | Unreal Engine 5.5–5.8</title>
+<link rel="canonical" href="https://nexusforgeue.github.io/FrameDoctor-docs/ko/">
+<link rel="alternate" hreflang="en" href="https://nexusforgeue.github.io/FrameDoctor-docs/">
+<link rel="alternate" hreflang="ru" href="https://nexusforgeue.github.io/FrameDoctor-docs/ru/">
+<link rel="alternate" hreflang="de" href="https://nexusforgeue.github.io/FrameDoctor-docs/de/">
+<link rel="alternate" hreflang="es" href="https://nexusforgeue.github.io/FrameDoctor-docs/es/">
+<link rel="alternate" hreflang="fr" href="https://nexusforgeue.github.io/FrameDoctor-docs/fr/">
+<link rel="alternate" hreflang="ja" href="https://nexusforgeue.github.io/FrameDoctor-docs/ja/">
+<link rel="alternate" hreflang="ko" href="https://nexusforgeue.github.io/FrameDoctor-docs/ko/">
+<link rel="alternate" hreflang="pt-BR" href="https://nexusforgeue.github.io/FrameDoctor-docs/pt-BR/">
+<link rel="alternate" hreflang="zh-Hans" href="https://nexusforgeue.github.io/FrameDoctor-docs/zh-Hans/">
+<link rel="alternate" hreflang="x-default" href="https://nexusforgeue.github.io/FrameDoctor-docs/">
+<link rel="icon" type="image/svg+xml" href="../assets/framedoctor.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/app.js" defer></script>
+</head>
+<body data-search-empty="일치하는 장이 없습니다. 검색어를 줄여 보세요." data-search-results="{count}개 장 일치">
+<a class="skip-link" href="#main">가이드 본문으로 이동</a>
+<header class="site-header"><a class="brand" href="#overview"><img src="../assets/framedoctor.svg" width="40" height="40" alt=""><span>FrameDoctor<small>문서</small></span></a><div class="header-actions"><label class="language-picker"><span class="visually-hidden">가이드 언어</span><select id="doc-locale" aria-label="가이드 언어"><option value="en" lang="en">English</option><option value="ru" lang="ru">Русский</option><option value="de" lang="de">Deutsch</option><option value="es" lang="es">Español</option><option value="fr" lang="fr">Français</option><option value="ja" lang="ja">日本語</option><option value="ko" lang="ko" selected>한국어</option><option value="pt-BR" lang="pt-BR">Português (Brasil)</option><option value="zh-Hans" lang="zh-Hans">简体中文</option></select></label><button type="button" class="print-button" id="print-guide">가이드 인쇄</button><button type="button" class="menu-button" id="menu-toggle" aria-label="목차" aria-controls="sidebar" aria-expanded="false"><span class="menu-caption">목차</span><svg class="menu-icon" aria-hidden="true" width="18" height="18" viewBox="0 0 18 18"><path d="M2 4h14M2 9h14M2 14h14" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button></div></header>
+<div class="veil" id="menu-veil" aria-hidden="true"></div>
+<div class="layout"><aside class="sidebar" id="sidebar"><div class="search-box"><label for="doc-search">이 가이드 검색</label><input id="doc-search" type="search" placeholder="검색 예: 첫 기록, p95, Blueprint" autocomplete="off" aria-controls="search-results"><div class="search-results" id="search-results" hidden></div><p class="visually-hidden" id="search-status" role="status" aria-live="polite"></p></div><nav aria-label="가이드 목차"><p class="nav-heading">여기서 시작</p><a href="#overview" aria-current="location"><span class="nav-number" aria-hidden="true">1</span><span>개요</span></a>
+<a href="#installation"><span class="nav-number" aria-hidden="true">2</span><span>설치</span></a>
+<a href="#first-capture"><span class="nav-number" aria-hidden="true">3</span><span>첫 기록</span></a>
+<a href="#capture"><span class="nav-number" aria-hidden="true">4</span><span>기록 설정</span></a>
+<p class="nav-heading">읽고 비교하기</p><a href="#findings"><span class="nav-number" aria-hidden="true">5</span><span>Findings</span></a>
+<a href="#frame-chart"><span class="nav-number" aria-hidden="true">6</span><span>프레임 시간 차트</span></a>
+<a href="#development"><span class="nav-number" aria-hidden="true">7</span><span>A와 B 준비</span></a>
+<a href="#compare"><span class="nav-number" aria-hidden="true">8</span><span>실행 결과 비교</span></a>
+<p class="nav-heading">작업 이어가기</p><a href="#runs"><span class="nav-number" aria-hidden="true">9</span><span>실행 기록과 내보내기</span></a>
+<a href="#profiles"><span class="nav-number" aria-hidden="true">10</span><span>프로필과 제한</span></a>
+<a href="#scenarios"><span class="nav-number" aria-hidden="true">11</span><span>나만의 시나리오</span></a>
+<a href="#troubleshooting"><span class="nav-number" aria-hidden="true">12</span><span>문제 해결</span></a>
+<a href="#glossary"><span class="nav-number" aria-hidden="true">13</span><span>용어집</span></a>
+<a href="#support"><span class="nav-number" aria-hidden="true">14</span><span>버전 및 지원</span></a></nav><div class="sidebar-footer"><span>FrameDoctor 1.0.0</span><span>Unreal Engine 5.5–5.8</span><span>Windows 64비트</span></div></aside>
+<main class="guide" id="main" tabindex="-1"><section class="doc-section overview" id="overview" data-title="FrameDoctor의 역할" tabindex="-1"><div class="compatibility"><span>Unreal Engine 5.5–5.8</span><span>Windows 64비트</span></div><h1>FrameDoctor 사용자 가이드</h1><p class="lead">씬에서 일어나는 일을 기록하고, 시간이 많이 드는 CPU 작업을 찾고, 직접 가한 변경이 도움이 되는지 확인하세요. Unreal Engine 프로젝트가 처음이어도 여기서 시작할 수 있습니다.</p><div class="intro-actions"><a class="primary" href="#first-capture">첫 기록 시작하기</a><a class="secondary" href="#installation">FrameDoctor 설치</a></div><ol class="workflow" aria-label="FrameDoctor 사용자 가이드"><li>씬 기록</li><li>근거 데이터 읽기</li><li>한 가지 변경</li><li>실행 결과 비교</li><li>결과 저장</li></ol>
+
+      <p>프레임은 게임 화면 한 장입니다. <strong>프레임 시간</strong>은 게임이 다음 프레임을 만드는 데 걸리는 시간입니다. 프레임 시간이 길면 화면이 멈추거나 끊기는 것처럼 느껴집니다. FrameDoctor는 시간 측정 이벤트가 담긴 트레이스 파일을 기록하고, 이 이벤트를 차트와 CPU 스코프 목록으로 보여 줍니다.</p>
+      <ul><li><strong>Capture:</strong> 실행 중인 씬을 기록합니다.</li><li><strong>Findings:</strong> 프레임 시간을 읽고 개별 CPU 작업을 살펴봅니다.</li><li><strong>Compare:</strong> 변경 전후에 보존해 둔 Development 빌드 두 개를 측정합니다.</li><li><strong>Runs:</strong> 이전 기록을 다시 열고 근거 데이터를 내보냅니다.</li><li><strong>Settings:</strong> 기록 프로필을 저장하고 임곗값을 선택합니다.</li></ul>
+      <div class="callout"><strong>변경은 사용자가 직접 합니다.</strong> FrameDoctor는 조사와 측정을 돕습니다. 코드를 다시 쓰거나 게임을 자동으로 수정하지 않습니다. 분석은 로컬에서 실행됩니다.</div>
+      <p>가이드는 번역되어 있지만, 여기서 안내하는 플러그인 조작 항목은 영어 이름을 그대로 사용합니다. 언어 선택기는 이 가이드의 언어를 바꿉니다. 익숙하지 않은 Unreal 용어는 <a href="#glossary">간단한 용어집</a>에서 확인할 수 있습니다.</p>
+</section>
+<section class="doc-section" id="installation" data-title="FrameDoctor 설치하고 열기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">2</span><h2>FrameDoctor 설치하고 열기</h2></div>
+
+      <p>FrameDoctor는 <strong>Windows 64비트의 Unreal Engine 5.5, 5.6, 5.7, 5.8</strong>을 지원합니다. 사용하는 엔진 버전에 맞는 플러그인 패키지를 선택하세요.</p>
+      <h3>Unreal을 처음 여는 경우</h3><p><strong>Epic Games Launcher → Unreal Engine → Library</strong>를 열고 설치된 엔진을 실행합니다. 기존 프로젝트를 열거나, <strong>Games → Blank → Blueprint</strong>를 선택하고 프로젝트 이름과 폴더를 입력한 뒤 <strong>Create</strong>를 클릭합니다. 프로젝트에는 게임이 저장되고, 레벨이라고도 부르는 맵에는 프로젝트 안의 씬 하나가 저장됩니다.</p>
+      <h3>Fab에서 설치하기</h3><ol role="list"><li>Unreal Editor를 닫습니다. 런처의 <strong>Fab Library</strong>에서 FrameDoctor를 찾아 <strong>Install to Engine</strong>을 클릭합니다.</li><li>프로젝트에 사용하는 엔진 버전을 선택하고 설치를 마칩니다.</li><li>프로젝트를 엽니다. <strong>Edit → Plugins</strong>에서 <strong>FrameDoctor</strong>를 검색하여 활성화하고, 다시 시작하라는 안내가 나오면 에디터를 재시작합니다.</li><li>에디터 기본 메뉴에서 <strong>Tools → FrameDoctor</strong>를 엽니다.</li></ol>
+      <h3>제공된 ZIP 설치하기</h3><ol role="list"><li>에디터를 닫고 플러그인의 압축을 풉니다.</li><li>압축을 푼 단일 <code>FrameDoctor</code> 폴더를 프로젝트의 <code>Plugins</code> 폴더에 넣습니다. <code>Plugins</code>가 없으면 만듭니다.</li><li>아래 경로를 확인합니다. <code>FrameDoctor/FrameDoctor</code>처럼 불필요한 폴더가 한 겹 더 생기지 않게 합니다.</li><li>프로젝트를 열고 <strong>Edit → Plugins</strong>에서 플러그인을 활성화합니다. 다시 시작한 뒤 <strong>Tools → FrameDoctor</strong>를 엽니다.</li></ol>
+      <pre><code>YourProject/
+  YourProject.uproject
+  Plugins/
+    FrameDoctor/
+      FrameDoctor.uplugin
+      Content/
+      Resources/
+      Source/</code></pre>
+      <details><summary>Unreal에서 모듈을 컴파일하라고 하면 어떻게 하나요?</summary><p>컴파일된 패키지에는 <code>Binaries</code>도 포함됩니다. 소스만 있는 패키지는 게임이 Blueprint를 사용하더라도 호환되는 C++ 컴파일러 도구 모음이 필요합니다. Visual Studio 2022에 <strong>Game development with C++</strong>와 엔진에서 요구하는 Windows SDK를 설치합니다. Blueprint 전용 프로젝트라면 <strong>Tools → New C++ Class</strong>에서 최소한의 클래스를 추가하여 C++ 프로젝트 타깃을 만듭니다. Unreal을 닫고 Visual Studio에서 프로젝트의 <strong>Development Editor / Win64</strong> 타깃을 빌드합니다. 그런 다음 프로젝트를 다시 엽니다. 컴파일이 실패하면 첫 번째 빌드 오류를 읽고 엔진과 패키지 버전이 맞는지 확인하세요.</p></details>
+      <p class="reference">Epic 가이드: <a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/working-with-plugins-in-unreal-engine">플러그인 활성화 및 설치</a>.</p>
+</section>
+<section class="doc-section" id="first-capture" data-title="첫 기록 만들기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">3</span><h2>첫 기록 만들기</h2></div>
+
+      <p>씬 하나와 함께 제공되는 예제 시나리오로 시작하세요. <strong>시나리오</strong>는 씬이 준비되고 측정을 시작할 수 있는 시점을 FrameDoctor에 알려 줍니다. 이 예제는 사용법을 배우고 씬을 조사하는 데 적합합니다.</p>
+      <ol role="list"><li><strong>맵을 열고 저장합니다.</strong> 조사할 씬을 연 뒤 <strong>File → Save All</strong>을 실행합니다.</li><li><strong>Play를 시작합니다.</strong> 에디터 도구 모음에서 삼각형 <strong>Play</strong> 버튼을 클릭합니다. 이를 Play In Editor, 줄여서 PIE라고 합니다. <kbd>Shift</kbd> + <kbd>F1</kbd>을 누르면 마우스가 해제되어 게임을 계속 실행하면서 에디터를 사용할 수 있습니다.</li><li><strong>Capture를 선택합니다.</strong> <strong>Tools → FrameDoctor → Capture</strong>를 엽니다. <strong>Use a packaged Development build</strong>는 선택하지 않은 상태로 둡니다. PIE는 이미 Play로 실행 중인 맵을 기록합니다. Map 필드에서 다른 맵을 선택해도 실행 중인 월드가 바뀌지는 않습니다.</li><li><strong>예제를 선택합니다.</strong> <strong>Scenario</strong>에서 <code>BP_ExploratoryScenario</code>를 검색합니다. 에셋을 찾으려면 Content Browser를 열거나 <kbd>Ctrl</kbd> + <kbd>Space</kbd>로 Content Drawer를 열고, 해당 설정에서 <strong>Show Plugin Content</strong>를 켠 뒤 <strong>FrameDoctor Content → FrameDoctor → Examples</strong>를 살펴봅니다. 시나리오는 FrameDoctor에서 선택하며, 레벨로 끌어 놓지 않습니다.</li><li><strong>기록합니다.</strong> <strong>워밍업 10초</strong>와 <strong>측정 60초</strong>를 유지합니다. Preflight를 읽고 <strong>Capture running PIE</strong>를 클릭합니다. Play를 계속 실행하며 조사하려는 동작을 수행합니다. 워밍업은 측정 결과에서 제외됩니다.</li><li><strong>Findings를 읽습니다.</strong> 기록이 끝나면 <strong>Findings</strong>가 이미 선택되어 있지 않은 경우 엽니다. <strong>Capture quality and unavailable reasons</strong>를 읽고, CPU 스코프를 선택해 근거 데이터를 확인합니다.</li></ol>
+      <div class="callout"><strong>첫 예제는 탐색용입니다.</strong> 이 예제의 설명은 재현 가능한 게임 조건을 확립하지 않습니다. 트레이스를 살펴볼 수는 있지만, A/B 효과를 확인하려면 <a href="#scenarios">조건을 제대로 기술한 시나리오</a>와 <a href="#development">Development 빌드 두 개</a>를 사용하세요.</div>
+      <p>기록이 끝날 때까지 게임을 계속 실행하세요. <kbd>Esc</kbd>나 에디터의 Stop 버튼은 PIE를 종료하고 기록을 중단시킬 수 있습니다. FrameDoctor의 현재 작업을 취소하려면 FrameDoctor에서 <strong>Cancel</strong>을 사용하세요.</p>
+</section>
+<section class="doc-section" id="capture" data-title="기록할 대상 선택하기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">4</span><h2>기록할 대상 선택하기</h2></div>
+
+      <p><strong>Capture</strong>에는 두 가지 대상이 있습니다. <strong>Use a packaged Development build</strong>가 선택되지 않으면 현재 PIE 월드를 기록합니다. 선택하면 FrameDoctor가 패키징된 게임을 별도로 실행합니다. 재현 가능한 변경 전후 측정에는 패키징된 게임을 사용하세요.</p>
+      <div class="table-scroll"><table><caption>Capture 조작 항목</caption><thead><tr><th>항목</th><th>사용 방법</th></tr></thead><tbody><tr><td>Baseline Development executable</td><td>Browse로 보존해 둔 빌드 A를 선택합니다. 이 경로는 Compare와 공유됩니다.</td></tr><tr><td>Map 및 Scenario</td><td>시나리오 클래스를 선택합니다. Development에서는 쿠킹된 맵과 시나리오 클래스 경로를 지정합니다.</td></tr><tr><td>Warmup</td><td>준비가 끝난 뒤 씬이 안정될 때까지 기다리는 시간입니다. 측정에서 제외됩니다.</td></tr><tr><td>Measurement</td><td>결과에 포함되는 시간입니다. 60초로 시작하세요.</td></tr><tr><td>Detailed naming for investigation</td><td>이름이 붙은 이벤트를 더 많이 포함합니다. 추가 부하가 생기므로 A/B 양쪽에서 같은 설정을 유지합니다.</td></tr><tr><td>Preflight</td><td>시작 전에 선택된 모드, 트레이스 채널, 사용 가능한 디스크 공간을 확인합니다.</td></tr></tbody></table></div>
+      <p>일반 CPU 프로필은 <code>cpu,frame,bookmark</code>를 사용합니다. CPU 이벤트는 작업을 설명하고, frame 이벤트는 프레임 경계를 제공하며, bookmark는 측정 구간을 표시합니다. 외부 기록이 이미 실행 중이면 이를 끝내야 FrameDoctor가 자체 트레이스를 시작할 수 있습니다.</p>
+      <p>준비 완료, 워밍업, 측정 순서로 진행됩니다. <strong>Ready timeout</strong>과 <strong>Maximum trace size</strong>는 <a href="#profiles">Settings</a>에서 설정합니다. 취소되거나 중단된 기록은 상태와 함께 보관되지만, 완료된 비교 기준으로 사용할 수는 없습니다.</p>
+      <figure><a href="../assets/screens/capture.png" target="_blank" rel="noopener" aria-label="이미지를 원본 크기로 열기: Development 대상, 맵, 시나리오, 워밍업, 측정, Preflight가 표시된 Capture 페이지."><img src="../assets/screens/capture.png" width="1920" height="1080" alt="Development 대상, 맵, 시나리오, 워밍업, 측정, Preflight가 표시된 Capture 페이지." loading="lazy"></a><figcaption>패키징된 Development 설정 예시입니다. 첫 PIE 기록에서는 패키징된 빌드 체크박스를 선택하지 않은 상태로 둡니다.</figcaption></figure>
+</section>
+<section class="doc-section" id="findings" data-title="CPU 근거 데이터 읽기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">5</span><h2>CPU 근거 데이터 읽기</h2></div>
+
+      <h3>기존 트레이스 열기</h3><p><strong>Import trace</strong>를 클릭하고 기록이 끝난 <code>.utrace</code> 파일을 선택한 뒤 Findings가 표시될 때까지 기다립니다. 가져오기 전에 기록을 중지하세요. 비교의 출처를 확인해야 한다면 트레이스 옆의 <code>manifest.json</code>과 원래 실행 기록의 파일들을 트레이스와 함께 보관합니다. <strong>Capture quality and unavailable reasons</strong>를 읽고 사용 가능한 CPU, 프레임, 측정 데이터를 확인하세요.</p>
+      <p>FrameDoctor의 측정 시작 및 측정 종료 북마크가 하나의 완전한 쌍으로 유일하게 확인되지 않으면 전체 트레이스를 탐색용 기록으로 분석합니다. 실행 매니페스트가 없거나 지원하지 않는 형식이면 기록의 완전성은 검증되지 않은 상태로 남습니다. 사용 가능한 이벤트를 살펴볼 수는 있지만, 검증되지 않은 데이터나 탐색용 데이터를 확인된 A/B 기준으로 사용할 수는 없습니다.</p>
+      <p>먼저 기록 상태와 품질을 확인하세요. 데이터가 불완전하거나 값이 <strong>Unavailable</strong>로 표시되면 <strong>Capture quality and unavailable reasons</strong>를 엽니다. 이는 값을 확정할 수 없었다는 뜻이며, 0이라는 뜻이 아닙니다.</p>
+      <ol role="list"><li><strong>Game frame p95</strong>와 측정 시간을 읽습니다. 차트 곡선을 프레임 예산과 비교합니다.</li><li><strong>Search scopes…</strong>로 타이머 이름을 찾거나 <strong>All threads</strong>로 스레드를 선택합니다. 스레드는 CPU에서 실행되는 작업의 흐름입니다. GameThread는 보통 게임 로직을 실행합니다.</li><li>스코프 행을 클릭합니다. 패널에서 <strong>Measured</strong>(측정 내용), <strong>Interpretation</strong>(결과 해석), <strong>Next experiment</strong>(다음 실험), <strong>Behavior risk</strong>(동작에 미칠 위험) 설명을 확인합니다.</li><li><strong>Copy evidence</strong>로 선택한 타이머·스레드·구간을 식별하는 정보를 복사합니다. <strong>Open in Insights</strong>로 같은 트레이스를 Unreal Insights에서 열고 해당 구간으로 직접 이동합니다.</li></ol>
+      <p><strong>Exclusive / frame</strong>은 같은 스레드의 하위 스코프 시간을 뺀 스코프 시간을 유효한 프레임 전체에서 평균한 값입니다. <strong>Calls</strong>는 측정 구간 안에서 시작된 호출 수입니다. 스코프에는 대기 시간이 포함될 수 있습니다. 이름만으로 특정 에셋을 식별하거나 Blueprint 노드 하나의 비용을 입증할 수는 없습니다.</p>
+      <div class="callout"><strong>검색에는 표시 범위 제한이 있습니다.</strong> 표는 순위가 높은 첫 250개 행을 불러옵니다. 검색과 스레드 필터는 불러온 행에 적용됩니다. 나머지 스코프 집계는 전체 분석 JSON에 보관됩니다. 표를 원래대로 되돌리려면 <strong>Clear filters</strong>를 사용하세요.</div>
+      <p>프레임 비용을 추정하려고 중첩된 스코프의 포함 시간이나 병렬 스레드 시간을 더하지 마세요. 게임 프레임, 렌더 프레임, GPU 큐 문맥은 의미가 다릅니다. 신뢰할 수 있는 GPU 프레임 값이 없으면 해당 값은 계속 사용할 수 없는 상태로 남습니다.</p>
+      <figure><a href="../assets/screens/findings.png" target="_blank" rel="noopener" aria-label="이미지를 원본 크기로 열기: 실제 프레임 차트, 선택된 EnemyAwareness::Update 스코프와 근거 패널을 보여 주는 Findings."><img src="../assets/screens/findings.png" width="1920" height="1080" alt="실제 프레임 차트, 선택된 EnemyAwareness::Update 스코프와 근거 패널을 보여 주는 Findings." loading="lazy"></a><figcaption>선택한 스코프는 측정된 비용과 조사 단계를 연결해 줍니다. 표시된 값은 기록 예시입니다.</figcaption></figure>
+</section>
+<section class="doc-section" id="frame-chart" data-title="프레임 시간 차트 살펴보기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">6</span><h2>프레임 시간 차트 살펴보기</h2></div>
+
+      <p>가로축은 측정 중 흐른 시간이고, 세로축은 밀리초 단위의 프레임 시간입니다. 봉우리가 높을수록 느린 프레임입니다. 점선 예산선은 선택한 목표를 나타냅니다. <strong>16.67 ms</strong>는 초당 약 60프레임에 해당합니다.</p>
+      <ul><li><strong>확대·축소:</strong> 차트 위에서 마우스 휠을 사용하거나, 아래쪽의 작은 전체 보기에서 호박색 핸들을 끕니다.</li><li><strong>이동:</strong> 전체 보기에서 선택된 범위 안쪽을 끕니다. 차트에 키보드 초점이 있으면 왼쪽·오른쪽 화살표로 보이는 범위를 옮길 수 있습니다.</li><li><strong>값 확인:</strong> 차트 위로 포인터를 움직입니다. 시간 또는 집계 버킷, 샘플 수, 확인 가능한 최소·최대 시간이 표시됩니다.</li><li><strong>초기화:</strong> <strong>Reset view</strong>를 클릭합니다. <kbd>Home</kbd> 또는 <kbd>Esc</kbd>로도 초점이 있는 차트를 초기화할 수 있습니다.</li></ul>
+      <div class="callout"><strong>확대·축소는 보이는 범위만 바꿉니다.</strong> 상단 p95 값, CPU 스코프 목록, 근거 데이터는 여전히 전체 측정을 사용합니다. 표시 범위를 좁혀도 그 구간에 맞춰 다시 계산하지 않습니다.</div>
+      <p>넓은 시간 범위를 표시하면 여러 프레임이 하나의 그리기 버킷에 묶일 수 있습니다. 이를 한 프레임으로 보지 말고 버킷의 샘플 수와 범위를 읽으세요. 프레임 데이터가 없는 구간은 빈 곳으로 남습니다.</p>
+      <figure><a href="../assets/screens/chart.png" target="_blank" rel="noopener" aria-label="이미지를 원본 크기로 열기: 전체 보기 핸들, 포인터 위치의 버킷 정보, 변하지 않은 전체 측정 지표가 표시된 확대 프레임 시간 차트."><img src="../assets/screens/chart.png" width="1920" height="1080" alt="전체 보기 핸들, 포인터 위치의 버킷 정보, 변하지 않은 전체 측정 지표가 표시된 확대 프레임 시간 차트." loading="lazy"></a><figcaption>전체 보기는 현재 표시되는 부분을 표시합니다. 어떤 값이 여전히 전체 기록을 설명하는지는 안내 문구에서 확인할 수 있습니다.</figcaption></figure>
+</section>
+<section class="doc-section" id="development" data-title="Development 빌드 두 개 준비하기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">7</span><h2>Development 빌드 두 개 준비하기</h2></div>
+
+      <p><strong>Development 빌드</strong>는 개발 기능이 활성화된 상태로 에디터 밖에서 실행할 수 있는 패키징된 게임입니다. <strong>Baseline A</strong>는 원래 빌드이고, <strong>Candidate B</strong>는 의도한 변경 한 가지를 포함합니다. 각 빌드 전체를 별도 폴더에 보관하세요.</p>
+      <ol role="list"><li>맵과 <a href="#scenarios">비교에 사용할 수 있는 시나리오</a>를 저장합니다. 프로젝트에서 FrameDoctor를 활성화합니다.</li><li><strong>Edit → Project Settings → Packaging</strong>을 엽니다. <strong>List of maps to include in a packaged build</strong>에 맵을 포함합니다. 시나리오 Blueprint도 쿠킹되도록 합니다. 포함되는 콘텐츠에서 하드 참조를 유지하거나, 해당 폴더를 <strong>Additional Asset Directories to Cook</strong>에 추가합니다.</li><li>에디터의 <strong>Platforms → Windows</strong> 패키징 항목에서 빌드 구성으로 <strong>Development</strong>를 선택하고 프로젝트를 패키징합니다. 엔진 버전에 따라 메뉴가 다르게 묶여 있을 수 있습니다. 이 출력 전체를 빌드 A로 보관합니다.</li><li>시험할 변경 한 가지를 직접 적용합니다. 저장하고 다른 디렉터리에 빌드 B를 패키징합니다. 씬, 입력, 카메라, NPC, 기록 설정을 일관되게 유지합니다.</li><li><strong>Capture</strong>에서 <strong>Use a packaged Development build</strong>를 선택합니다. A의 실행 파일을 찾아 선택한 뒤 맵을 선택하고 시나리오의 생성 클래스 경로를 입력합니다.</li></ol>
+      <pre><code>Map: /Game/Maps/TestMap
+Scenario: /Game/Scenarios/BP_TestScenario.BP_TestScenario_C
+Executable: BuildA/Windows/YourProject/Binaries/Win64/YourProject.exe</code></pre>
+      <p>에셋 이름은 자신의 프로젝트에 맞게 바꾸세요. <code>/Game</code>은 Unreal에서 보는 프로젝트의 Content 폴더이며, Windows 드라이브가 아닙니다. 생성된 Blueprint 클래스는 <code>_C</code>로 끝납니다. 콘텐츠를 포함해 패키징된 폴더 전체를 보관하세요. 실행 파일만 복사해서는 부족합니다.</p>
+      <p>Preflight는 요청한 설정을 검사합니다. 외부 빌드에 맵과 시나리오가 들어 있는지는 실제 로딩으로 확인됩니다. 기록은 개발용 구성을 위한 기능입니다. <strong>Shipping 및 Test 빌드는 FrameDoctor 기록을 할 수 없습니다</strong>.</p>
+      <p class="reference">Epic 가이드: <a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/packaging-your-project">Unreal 프로젝트 패키징</a>.</p>
+</section>
+<section class="doc-section" id="compare" data-title="변경이 도움이 되었는지 확인하기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">8</span><h2>변경이 도움이 되었는지 확인하기</h2></div>
+
+      <ol role="list"><li>앞의 설명대로 A와 B를 준비합니다. <strong>Compare</strong>에서 <strong>New Development comparison</strong>을 펼칩니다.</li><li><strong>Baseline Development executable</strong>과 <strong>Candidate Development executable</strong>을 선택합니다. <strong>Intended change</strong>에 무엇을 바꿨는지 정확히 적습니다.</li><li>실행 전에 <strong>Primary metric</strong>을 선택합니다. 느린 프레임에는 <code>p95GameFrame</code>, 평균 프레임 시간에는 <code>meanGameFrame</code>, 특히 느린 꼬리 구간에는 <code>p99GameFrame</code>을 사용합니다.</li><li><strong>5쌍</strong>, 워밍업 10초, 측정 60초로 시작합니다. 의도한 빌드 변경에서 일반적으로 허용하는 차이는 <code>gameBuildId</code>만 남깁니다. 해상도, 그래픽 설정, VSync, 프레임 제한, 시나리오, 계측 설정을 일치시킵니다.</li><li><strong>Launch paired Development series</strong>를 클릭합니다. FrameDoctor는 보존한 빌드를 AB/BA 순서로 번갈아 실행합니다. 시리즈가 끝날 때까지 두 빌드 폴더를 변경하지 마세요.</li><li>판정과 그 이유, 쌍별 차이, 노이즈, 임곗값, 각 쌍의 원시 값을 읽습니다. 저장된 결과는 <strong>Open HTML report</strong> 또는 <strong>Open report folder</strong>로 엽니다.</li></ol>
+      <div class="table-scroll"><table><caption>비교 판정의 의미</caption><thead><tr><th>판정</th><th>다음 단계</th></tr></thead><tbody><tr><td>Improved</td><td>선택한 프레임 시간 지표가 확인 임곗값을 넘어 일관되게 감소했습니다. 게임플레이의 정확성은 별도로 확인하세요.</td></tr><tr><td>Regressed</td><td>선택한 지표가 임곗값을 넘어 일관되게 증가했습니다. 변경을 조사하거나 되돌리세요.</td></tr><tr><td>Inconclusive</td><td>효과가 너무 작거나 일관되지 않거나, 유효한 데이터가 충분하지 않습니다. 같다는 뜻이나 효과가 없다는 뜻은 아닙니다.</td></tr><tr><td>InvalidComparison</td><td>해당 실행 결과로는 유효한 비교를 할 수 없습니다. 불일치 또는 데이터 누락 이유를 읽고 먼저 바로잡으세요.</td></tr></tbody></table></div>
+      <p>효과를 확인하려면 비교 가능한 조건과 함께 <strong>최소 5개의 완전한 쌍, 각 실행에서 측정 시간 30초와 완전하고 유효한 프레임 300개</strong>가 필요합니다. 더 짧은 기록은 탐색에 도움이 될 수 있습니다. 예제 탐색 시나리오로는 효과를 확인할 수 없습니다.</p>
+      <p>밀리초 값은 낮을수록 좋습니다. <strong>쌍별 차이</strong>는 각 쌍의 <code>B − A</code> 차이의 중앙값입니다. 화면에 표시된 두 중앙값을 빼는 것과 다를 수 있습니다. 효과는 절대 임곗값, 상대 임곗값, 추정 노이즈 중 가장 큰 값을 넘어야 하며, 최소 80%의 쌍에서 방향이 같아야 합니다. 기본값은 0.5 ms와 5%입니다. 이 검사는 안정성을 판단하는 데 도움을 주지만, 그 자체로 원인을 확정하지는 않습니다.</p>
+      <p>완료된 시리즈를 다시 보려면 <strong>Import series and export report</strong>를 사용하고 해당 <code>series.json</code>을 선택합니다. 허용 차이를 지정해도 계측 설정이나 계산 방법의 불일치를 무시할 수는 없습니다.</p>
+      <figure><a href="../assets/screens/compare.png" target="_blank" rel="noopener" aria-label="이미지를 원본 크기로 열기: 판정, 개별 실행, 쌍별 차이, 노이즈, 임곗값을 보여 주는 실제 5쌍 비교."><img src="../assets/screens/compare.png" width="1920" height="1080" alt="판정, 개별 실행, 쌍별 차이, 노이즈, 임곗값을 보여 주는 실제 5쌍 비교." loading="lazy"></a><figcaption>요약 판정과 함께 모든 쌍과 각 조건을 살펴보세요.</figcaption></figure>
+</section>
+<section class="doc-section" id="runs" data-title="근거 데이터를 다시 열고 공유하기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">9</span><h2>근거 데이터를 다시 열고 공유하기</h2></div>
+
+      <p><strong>Runs</strong>를 열고 <strong>Refresh saved runs</strong>를 클릭합니다. 행을 선택하면 원본 세부 정보를 읽을 수 있습니다. 실행을 두 번 클릭하거나 <strong>Open selected evidence</strong>를 클릭하면 Findings가 다시 열립니다. 시리즈는 쌍별 비교 보고서가 열립니다.</p>
+      <p>기본 출력 위치는 <code>&lt;YourProject&gt;/Saved/FrameDoctor</code>이며, Settings에서 다른 출력 폴더를 선택할 수 있습니다. 단일 실행에는 원본 <code>.utrace</code>, 매니페스트, 분석이 보관됩니다. 시리즈에는 <code>series.json</code>, <code>comparison.json</code>, HTML 보고서, 원래 실행에 대한 참조가 보관됩니다.</p>
+      <ol role="list"><li>공유할 시리즈를 불러옵니다.</li><li><strong>Include source traces in the export</strong>로 원본 트레이스를 포함할지 선택합니다. 상황에 맞게 <strong>Remove absolute paths and username from exported JSON</strong>을 켜 둡니다.</li><li><strong>Export paired series bundle</strong>을 클릭하고 내보낼 위치를 선택한 뒤 완료될 때까지 기다립니다.</li><li>내보낸 파일을 검토하고 결과를 검토할 사람에게 전체 번들을 보냅니다.</li></ol>
+      <div class="callout"><strong>원시 트레이스는 원래 내용을 유지합니다.</strong> JSON의 정보 삭제 기능은 트레이스 안의 경로나 메시지를 제거하지 않습니다. 내보내기 체크박스 두 개는 기본적으로 모두 켜져 있습니다. 검토 패키지의 크기를 줄이려면 트레이스를 뺄 수 있지만, 옮긴 후 결과를 다시 확인하려면 받는 사람에게 원래의 유효한 실행 데이터와 원시 트레이스가 필요합니다.</div>
+      <p><strong>Promote current run to baseline</strong>은 조건을 충족하는 완료된 비교 가능 실행을 <code>&lt;YourProject&gt;/FrameDoctor/Baselines</code>에 저장합니다. 짧은 기록이나 탐색용 기록은 해당하지 않습니다. 더 이상 조사하거나 재확인할 필요가 없을 때까지 원본 데이터를 보관하세요.</p>
+      <figure><a href="../assets/screens/runs.png" target="_blank" rel="noopener" aria-label="이미지를 원본 크기로 열기: 저장된 완료 실행, 원본 트레이스의 사용 가능 여부, 내보내기 옵션과 선택한 원본 기록."><img src="../assets/screens/runs.png" width="1920" height="1080" alt="저장된 완료 실행, 원본 트레이스의 사용 가능 여부, 내보내기 옵션과 선택한 원본 기록." loading="lazy"></a><figcaption>원본 트레이스를 사용할 수 있어야 보고서와 실제 기록의 연결을 유지할 수 있습니다.</figcaption></figure>
+</section>
+<section class="doc-section" id="profiles" data-title="반복해서 쓰는 설정 저장하기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">10</span><h2>반복해서 쓰는 설정 저장하기</h2></div>
+
+      <p><strong>프로필</strong>은 저장된 기록 및 분석 설정 모음입니다. <strong>Settings</strong>에서 Profile ID와 이름을 정하고 항목을 설정한 뒤 <strong>Save profile</strong>을 사용합니다. 프로필 JSON 파일을 다시 열려면 <strong>Load profile</strong>을 사용합니다. 프로젝트 이력으로 관리하려면 프로젝트의 <code>FrameDoctor/Profiles</code> 폴더에 프로필을 보관하세요.</p>
+      <div class="table-scroll"><table><caption>먼저 알아둘 설정</caption><thead><tr><th>설정</th><th>의미</th></tr></thead><tbody><tr><td>Trace channels</td><td>일반 CPU·프레임 기록에는 cpu,frame,bookmark를 사용합니다.</td></tr><tr><td>Ready timeout</td><td>워밍업을 시작하기 전에 시나리오가 준비될 때까지 기다리는 시간입니다.</td></tr><tr><td>Maximum trace size</td><td>트레이스 하나에 사용할 디스크 용량입니다. 이를 초과한 실행은 실패하며 부분 데이터가 보관됩니다.</td></tr><tr><td>Frame budget</td><td>목표 프레임 시간입니다. 기본값은 16.67 ms입니다.</td></tr><tr><td>Hitch threshold</td><td>긴 프레임으로 셀 임곗값입니다. 기본값은 50 ms입니다.</td></tr><tr><td>Absolute / relative effect threshold</td><td>노이즈 검사를 고려하기 전에 필요한 최소 비교 효과입니다. 기본값은 0.5 ms와 5%입니다.</td></tr><tr><td>Output folder</td><td>새 기록과 보고서를 저장하는 위치입니다. 비워 두면 기본 위치인 Saved/FrameDoctor를 사용합니다.</td></tr></tbody></table></div>
+      <p>A/B 양쪽에서 같은 프로필을 사용하세요. 실험을 시작하기 전에 목표에 맞게 임곗값을 바꾸세요. 작업 실행 중에 양식을 수정해도 해당 작업에 기록된 설정이 바뀌지는 않습니다. 지원하지 않는 새 스키마의 프로필은 읽기 전용으로 열립니다. 스키마 번호를 직접 고치지 말고 호환되는 플러그인을 사용하세요.</p>
+      <figure><a href="../assets/screens/settings.png" target="_blank" rel="noopener" aria-label="이미지를 원본 크기로 열기: 프로필 항목, 기록 제한, 분석 임곗값, 출력 위치가 있는 Settings 페이지."><img src="../assets/screens/settings.png" width="1920" height="1080" alt="프로필 항목, 기록 제한, 분석 임곗값, 출력 위치가 있는 Settings 페이지." loading="lazy"></a><figcaption>프로필을 저장하면 이후 기록에서도 의도적으로 정한 같은 조건을 사용할 수 있습니다.</figcaption></figure>
+</section>
+<section class="doc-section" id="scenarios" data-title="반복 가능한 시나리오 만들기" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">11</span><h2>반복 가능한 시나리오 만들기</h2></div>
+
+      <p>변경 전후의 효과를 확인할 준비가 되면 이 절차를 사용하세요. 시나리오는 실제 카메라, 입력, NPC, 난수 조건을 설정하고 설명해야 합니다. 훅은 Blueprint로 구현할 수 있습니다. 시나리오 작성에 C++는 필수가 아닙니다.</p>
+      <ol role="list"><li>Content Browser에서 <strong>Add → Blueprint Class → All Classes</strong>를 선택합니다. <strong>FrameDoctorScenario</strong>를 검색하고 프로젝트 콘텐츠에 <code>BP_TestScenario</code>를 만듭니다.</li><li>해당 Blueprint를 엽니다. <strong>Overrides</strong> 메뉴에서 아래 훅을 구현합니다. 이 객체는 기록 시 선택하며, 레벨에 배치하는 Actor가 아닙니다.</li><li>Blueprint와 맵을 컴파일하고 저장합니다. FrameDoctor에서 클래스를 선택합니다. 패키징된 기록은 <a href="#development">A와 B 준비</a>의 설명대로 맵과 시나리오를 쿠킹에 포함합니다.</li><li>긴 비교를 시작하기 전에 짧은 탐색 기록을 한 번 실행하여 준비 완료 확인과 정리 작업을 점검합니다.</li></ol>
+      <div class="table-scroll"><table><caption>시나리오 훅</caption><thead><tr><th>훅</th><th>Blueprint에서 할 일</th></tr></thead><tbody><tr><td>Prepare(World)</td><td>실제 씬 액터를 찾고, 변경할 설정을 저장하고, 카메라·입력·NPC 상태를 설정하고, 사용하는 난수 스트림을 초기화합니다.</td></tr><tr><td>IsReady</td><td>필요한 액터, 에셋, 초기 상태가 준비된 뒤에만 true를 반환합니다. 기본값은 false입니다. 일정 시간 기다리기만 해서는 준비 완료를 확인할 수 없습니다.</td></tr><tr><td>BeginMeasurement</td><td>워밍업 이후 통제된 동작을 시작합니다.</td></tr><tr><td>EndMeasurement</td><td>측정이 끝나면 해당 동작을 중지합니다. 시작된 뒤 취소되는 경우도 포함합니다.</td></tr><tr><td>Cleanup</td><td>자신의 시나리오가 변경한 사항만 복원합니다. 준비가 일부만 된 경우와 취소도 처리합니다.</td></tr><tr><td>DescribeScenario</td><td>아래 조건을 설명하는 Frame Doctor Scenario Snapshot을 반환합니다.</td></tr></tbody></table></div>
+      <details><summary>시나리오 스냅샷 채우기</summary><p><strong>DescribeScenario</strong>에서 <strong>Make Frame Doctor Scenario Snapshot</strong>을 반환값에 연결합니다. 다음 필드에 실제 조건을 정확히 입력합니다.</p><ul><li><strong>ScenarioId / Revision:</strong> 비어 있지 않은 안정적인 식별자와 리비전입니다.</li><li><strong>CameraRoute:</strong> 실제 고정 시점 또는 재현 가능한 경로입니다.</li><li><strong>InputConditions:</strong> 사용하는 입력 또는 플레이어 입력을 배제하는 방법입니다.</li><li><strong>NpcConditions:</strong> NPC 수와 행동입니다. NPC가 없는 경우도 명시합니다.</li><li><strong>ParametersJson:</strong> 선택 항목인 유효한 JSON 객체입니다. 예를 들어 <code>{"route":"fixed","npcCount":0}</code>은 실제 씬을 설명할 때만 사용합니다.</li><li><strong>SeedPolicy / RandomSeed:</strong> 그 시드로 게임의 난수를 실제 초기화했을 때만 Known, 난수를 사용하지 않을 때 NotUsed, 확인되지 않았을 때 Unknown으로 설정합니다.</li><li><strong>DeclaredNondeterminism:</strong> 물리, 스트리밍, 운영체제 스케줄링처럼 남아 있는 변동 요인입니다.</li></ul><p>시드 숫자를 적는 것만으로 게임이 초기화되지는 않습니다. 조건이 확인되지 않았다면 탐색용으로 남습니다. 포함된 BP_ExploratoryScenario는 의도적으로 빈 설명을 반환합니다.</p></details>
+      <p>Cleanup에서 다른 시스템의 액터나 기록을 제거하지 마세요. 성능을 변경한 뒤에는 게임플레이 동작을 별도로 확인하세요. 시간 측정 조건이 같다고 해서 새 로직이 올바르다는 뜻은 아닙니다.</p>
+</section>
+<section class="doc-section" id="troubleshooting" data-title="제대로 동작하지 않을 때" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">12</span><h2>제대로 동작하지 않을 때</h2></div>
+
+      <details open><summary>Tools에 FrameDoctor가 없습니다</summary><p><strong>Edit → Plugins</strong>를 확인하고 FrameDoctor를 활성화한 뒤 다시 시작합니다. 패키지가 엔진과 맞는지, <code>FrameDoctor.uplugin</code>이 플러그인 폴더 바로 아래 있는지 확인합니다. 소스를 사용하는 경우 먼저 Development Editor 빌드를 마칩니다.</p></details>
+      <details><summary>Capture running PIE를 사용할 수 없습니다</summary><p><strong>Play</strong>로 씬을 시작합니다. 패키징된 빌드 체크박스는 선택하지 않고, 구체적인 시나리오 클래스를 고른 뒤 다른 작업이 끝나기를 기다립니다. 탭을 사용하려면 Shift+F1으로 PIE 마우스를 해제합니다.</p></details>
+      <details><summary>예제 시나리오가 보이지 않습니다</summary><p>Content Browser 설정에서 <strong>Show Plugin Content</strong>를 켭니다. FrameDoctor의 Examples 폴더에서 <code>BP_ExploratoryScenario</code>를 검색한 뒤 Capture에서 해당 클래스를 선택합니다. 레벨에 배치하는 Actor가 아닙니다.</p></details>
+      <details><summary>Ready timeout이 발생합니다</summary><p>시나리오가 제한 시간 안에 준비되지 않았습니다. <strong>IsReady</strong> 오버라이드, 실제 액터·에셋, 맵, 쿠킹된 클래스 경로를 확인합니다. 기본 클래스는 false를 반환합니다. 실제 로딩에 시간이 필요하면 Ready timeout을 늘리되, 준비 상태 검사는 실질적인 조건을 확인하도록 유지합니다.</p></details>
+      <details><summary>프레임 시간이나 배타 비용이 Unavailable입니다</summary><p>프레임 시간에는 측정 구간 안의 frame 이벤트와 완전한 프레임이 필요합니다. 배타 CPU 비용에는 완전하고 일관된 스코프 계층도 필요합니다. cpu,frame,bookmark를 기록하고 실행을 유지하며 저장된 이유를 읽습니다. 사용할 수 없는 값을 0으로 취급하지 마세요.</p></details>
+      <details><summary>비교가 Inconclusive 또는 InvalidComparison입니다</summary><p>이유를 읽으세요. 모든 실행의 상태, 완전한 5쌍, 실행당 30초의 측정과 300개의 완전한 프레임, 충분히 설명된 시나리오, 안정적인 조건, 일치하는 계측 설정을 확인합니다. Inconclusive는 효과가 없다는 증거가 아닙니다. 차이를 해석하기 전에 유효성 문제를 바로잡으세요.</p></details>
+      <details><summary>패키징된 빌드가 맵이나 시나리오를 찾지 못합니다</summary><p>FrameDoctor를 활성화한 Development 빌드를 패키징합니다. 맵과 시나리오를 모두 쿠킹에 포함합니다. <code>/Game/...</code> 에셋 경로와 Blueprint 클래스 접미사 <code>_C</code>를 사용합니다. 보존한 전체 빌드 폴더에서 실행 파일을 선택합니다.</p></details>
+      <details><summary>기록이 실패하거나 멈추거나 디스크 제한을 초과합니다</summary><p>저장된 실행 상태와 이유를 읽습니다. 디스크 공간, 쓰기 권한, 트레이스 크기 제한, 다른 기록 도구가 실행 중인지 확인합니다. 새 기록에서는 이벤트 상세도나 시간을 줄입니다. Play를 계속 실행하고 측정 중에는 맵이나 그래픽 설정을 바꾸지 않습니다.</p></details>
+      <details><summary>Open in Insights로 트레이스를 열 수 없습니다</summary><p>엔진에 맞는 Unreal Insights 도구를 설치합니다. 원본 트레이스를 사용할 수 있도록 유지합니다. FrameDoctor는 같은 원본을 엽니다. 정확한 타이머·스레드·구간 이동은 수동입니다. 엔진이 비 ASCII 문자가 있는 경로를 열지 못하면 원본 기록을 보존하면서 간단한 ASCII 작업 경로를 사용합니다.</p></details>
+      <details><summary>보고서는 열리지만 원본 트레이스가 없습니다</summary><p>내보낸 보고서는 트레이스 없이 볼 수 있는 경우도 있지만, 재확인에는 원래의 유효한 원시 데이터가 필요합니다. 원본 트레이스를 포함한 새 번들을 내보내거나 원래 실행 폴더 전체를 복원합니다. JSON에서 정보를 삭제해도 누락된 트레이스가 생기지는 않습니다.</p></details>
+</section>
+<section class="doc-section" id="glossary" data-title="간단한 용어집" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">13</span><h2>간단한 용어집</h2></div>
+
+      <dl><dt>Project / map — 프로젝트 / 맵</dt><dd>게임 작업 공간 / 그 안에 저장된 레벨 또는 씬 하나입니다.</dd><dt>Blueprint — 블루프린트</dt><dd>비주얼 스크립팅을 위한 Unreal 에셋입니다. C++ 코드를 쓰는 대신 노드를 연결합니다.</dd><dt>PIE</dt><dd>Play In Editor의 약자로, Unreal Editor 안에서 게임을 실행하는 것입니다.</dd><dt>Development / Shipping</dt><dd>개발용 빌드 / 최종 배포용 구성입니다. 패키징된 기록에는 Development를 사용합니다.</dd><dt>Trace / .utrace — 트레이스</dt><dd>기록된 시간 측정 이벤트의 원본 파일입니다.</dd><dt>Scope / timer / thread — 스코프 / 타이머 / 스레드</dt><dd>측정된 작업 구간 / 그 이름 / 해당 작업이 실행된 CPU 작업 흐름입니다.</dd><dt>ms / FPS</dt><dd>프레임당 밀리초 / 초당 프레임 수입니다. 프레임당 16.67 ms이면 게임은 초당 약 60프레임을 생성합니다.</dd><dt>Mean / p95 / p99 — 평균 / p95 / p99</dt><dd>평균 프레임 시간 / 완전한 프레임의 95% / 99%가 그 이하로 걸리는 시간입니다. 백분위수가 높을수록 느린 프레임을 더 강조합니다.</dd><dt>Warmup / measurement — 워밍업 / 측정</dt><dd>결과에서 제외되는 안정화 시간 / 결과 계산에 사용하는 구간입니다.</dd><dt>Baseline / candidate / pair — 기준 / 후보 / 쌍</dt><dd>원래 빌드 / 변경한 빌드 / 각각 한 번씩 실행해 함께 사용하는 묶음입니다.</dd><dt>Noise / threshold — 노이즈 / 임곗값</dt><dd>반복 실행 사이의 변동 / 확인에 필요한 최소한의 안정적인 효과입니다.</dd><dt>Cook — 쿠킹</dt><dd>에셋이 패키징된 게임에서 실행되도록 Unreal이 준비하는 과정입니다.</dd><dt>Manifest / profile — 매니페스트 / 프로필</dt><dd>기록에 저장된 조건과 상태 / 기록을 위해 선택한 설정입니다.</dd></dl>
+</section>
+<section class="doc-section" id="support" data-title="버전 및 지원" tabindex="-1"><div class="section-heading"><span class="chapter-number" aria-hidden="true">14</span><h2>버전 및 지원</h2></div>
+
+      <p><strong>FrameDoctor 1.0.0 · Unreal Engine 5.5, 5.6, 5.7, 5.8 · Windows 64비트.</strong></p>
+      <p>도움을 요청할 때는 엔진 및 플러그인 버전, PIE와 Development 중 무엇을 사용했는지, 클릭한 항목, 저장된 상태·이유, 기대한 결과를 알려 주세요. 도움이 되면 스크린샷이나 내용을 검토한 근거 데이터 번들을 첨부합니다. 개인 경로나 확인하지 않은 원시 로그는 공유하지 마세요.</p>
+      <p>이 가이드의 오류나 불명확한 설명은 <a href="https://github.com/NexusForgeUE/FrameDoctor-docs/issues">문서 이슈로 등록</a>해 주세요. 플러그인 지원은 FrameDoctor 제품 페이지 또는 구매 경로의 지원 연락처를 이용하세요.</p>
+</section><footer class="guide-footer"><span>FrameDoctor 문서. NexusForgeUE.</span><a href="#overview">맨 위로</a></footer></main></div>
+</body>
+</html>
